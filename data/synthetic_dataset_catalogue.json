@@ -1,0 +1,234 @@
+{
+  "dataset_name": "REQTRACE AI Phase 3 Synthetic Evidence",
+  "generator_version": "1.0.0",
+  "generated_at_utc": "2026-09-26T12:17:03.839054+00:00",
+  "safety_notice": "FICTIONAL TRAINING DATA - NOT FOR ENGINEERING APPROVAL, CERTIFICATION, SAFETY APPROVAL, AIRWORTHINESS APPROVAL, PRODUCTION RELEASE, OR OBSERVATION CLOSURE.",
+  "application_notice": "ReqTrace AI provides evidence-based review support using the retrieved documents. The result is not a substitute for authorized engineering, quality, safety, certification, or release approval.",
+  "file_count": 28,
+  "files": [
+    {
+      "relative_path": "data/expected_outcomes.json",
+      "file_name": "expected_outcomes.json",
+      "document_type": "data",
+      "size_bytes": 4605,
+      "sha256": "ed97e1d774c7e8256b924a91e2d3d0cdf6b7a8737dc92f4d0bdef2b6cc768533",
+      "page_count": null
+    },
+    {
+      "relative_path": "documents/code/alert_manager.c",
+      "file_name": "alert_manager.c",
+      "document_type": "code",
+      "size_bytes": 1126,
+      "sha256": "7c24ef7b547f61ac5d4035019f492594f9eeafb977e48704317a71dc2fe91017",
+      "page_count": null
+    },
+    {
+      "relative_path": "documents/code/command_validator.c",
+      "file_name": "command_validator.c",
+      "document_type": "code",
+      "size_bytes": 562,
+      "sha256": "61cfecab86dea383f8421347992acb6cae39c8173d777c2a8912441e1e354ddc",
+      "page_count": null
+    },
+    {
+      "relative_path": "documents/code/data_processor.c",
+      "file_name": "data_processor.c",
+      "document_type": "code",
+      "size_bytes": 829,
+      "sha256": "413f7fb7532a8c15dc6ee45d2770b9c4ac23ab8232878e8c21b9c9df87c0dc09",
+      "page_count": null
+    },
+    {
+      "relative_path": "documents/code/mode_controller.c",
+      "file_name": "mode_controller.c",
+      "document_type": "code",
+      "size_bytes": 768,
+      "sha256": "612b24bf2e19b8c4a944b48780472a8cda1d08a0a640d0fd30194ca771167d8b",
+      "page_count": null
+    },
+    {
+      "relative_path": "documents/code/recovery_manager.c",
+      "file_name": "recovery_manager.c",
+      "document_type": "code",
+      "size_bytes": 719,
+      "sha256": "6434016b862d46e4204334093ee7867392ac27ee38cade17b0a573ae9a2ebaab",
+      "page_count": null
+    },
+    {
+      "relative_path": "documents/frd/FRD_Alert_Handling_Rev01.pdf",
+      "file_name": "FRD_Alert_Handling_Rev01.pdf",
+      "document_type": "frd",
+      "size_bytes": 1967,
+      "sha256": "cfda730441de300d542eeafa1ca490148ac5bc9541a74f2b46d81402c0199a15",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/frd/FRD_Alert_Handling_Rev02.pdf",
+      "file_name": "FRD_Alert_Handling_Rev02.pdf",
+      "document_type": "frd",
+      "size_bytes": 2088,
+      "sha256": "bfd732f7b5b9338f1e98aa75d0597e389047778dd803266d897eb33711b98b5d",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/frd/FRD_Command_Processing_Rev01.pdf",
+      "file_name": "FRD_Command_Processing_Rev01.pdf",
+      "document_type": "frd",
+      "size_bytes": 2069,
+      "sha256": "b9158de4cd3800a967c4bf3e4bbfd70ec38d9e43c8f261a28606786c8a03bd46",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/frd/FRD_Input_Validation_Rev01.pdf",
+      "file_name": "FRD_Input_Validation_Rev01.pdf",
+      "document_type": "frd",
+      "size_bytes": 2212,
+      "sha256": "f83c58d4c46dec95a25899d9747711f1f6331a3bedb4a9290cb905f64da5d759",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/frd/FRD_Mode_Control_Rev01.pdf",
+      "file_name": "FRD_Mode_Control_Rev01.pdf",
+      "document_type": "frd",
+      "size_bytes": 2093,
+      "sha256": "04ac5b98a5e1df0d9e729075ae4b8b59e0d6ebaedeb4e9f27826b26cc5d1eb76",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/frd/FRD_Recovery_Control_Rev01.pdf",
+      "file_name": "FRD_Recovery_Control_Rev01.pdf",
+      "document_type": "frd",
+      "size_bytes": 2026,
+      "sha256": "33898b6dd5859570a60e58a28fc1023f10caeb290b0d61b631334cb2b5500244",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/observations/Observation_Report_OBS-023.pdf",
+      "file_name": "Observation_Report_OBS-023.pdf",
+      "document_type": "observations",
+      "size_bytes": 2260,
+      "sha256": "2f3f1edcf8c84298f64c40dc8c1d416e59ef72d998c99806935753e4abc196de",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/observations/Observation_Report_OBS-031.pdf",
+      "file_name": "Observation_Report_OBS-031.pdf",
+      "document_type": "observations",
+      "size_bytes": 2086,
+      "sha256": "21d0c11adc6210d917d650b33269f4f9b6662fd3a1f8ca3f8337bb9dbb4fe78a",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/observations/Observation_Report_OBS-044.pdf",
+      "file_name": "Observation_Report_OBS-044.pdf",
+      "document_type": "observations",
+      "size_bytes": 2147,
+      "sha256": "50de3491f274abde85275cc147294b6934363794d77707283908159d1363f1ce",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/observations/Observation_Report_OBS-052.pdf",
+      "file_name": "Observation_Report_OBS-052.pdf",
+      "document_type": "observations",
+      "size_bytes": 2142,
+      "sha256": "a9c831da28d7a8b3af1bb2cbbd7f0b7ff0b1e332ea5e7593510860b4995715e2",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/observations/Observation_Report_OBS-061.pdf",
+      "file_name": "Observation_Report_OBS-061.pdf",
+      "document_type": "observations",
+      "size_bytes": 2095,
+      "sha256": "99c6a819e8b241fc61ab98f18d0cfcff1589d3b513f6dd1c6b59a2c59cfc6026",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/observations/Observation_Report_OBS-070.pdf",
+      "file_name": "Observation_Report_OBS-070.pdf",
+      "document_type": "observations",
+      "size_bytes": 2149,
+      "sha256": "6606cce763f4bdc551b7e78f7469194132aceea9ae7c17e6e0eee9d6493f2332",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/reviews/Closure_Review_OBS-070.pdf",
+      "file_name": "Closure_Review_OBS-070.pdf",
+      "document_type": "reviews",
+      "size_bytes": 2032,
+      "sha256": "9911a367ce58e86b8ce24805ccc8b07c53c9dbe39bf47b555ac7795e71377f04",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/reviews/Review_Record_OBS-023.pdf",
+      "file_name": "Review_Record_OBS-023.pdf",
+      "document_type": "reviews",
+      "size_bytes": 1884,
+      "sha256": "83f2861b7958ef0d35dd493d3ee1d22290c4d99409bedfbd9a05eb16eb149cf7",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/reviews/Review_Record_OBS-031.pdf",
+      "file_name": "Review_Record_OBS-031.pdf",
+      "document_type": "reviews",
+      "size_bytes": 1915,
+      "sha256": "e3d7fa64463de4ddfc8a3a6cb045792c3d7e2e220783a1232fbe0274c3eb089e",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/reviews/Review_Record_OBS-044.pdf",
+      "file_name": "Review_Record_OBS-044.pdf",
+      "document_type": "reviews",
+      "size_bytes": 1887,
+      "sha256": "bda760b12bd44d18a94f61d256b9daa2dfcccaaad23e7921b6e523bfaec56ee6",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/reviews/Review_Record_OBS-052.pdf",
+      "file_name": "Review_Record_OBS-052.pdf",
+      "document_type": "reviews",
+      "size_bytes": 1955,
+      "sha256": "2fddbccbc05214a0d91793176aad955a5b6d45b0cbb42e36518c34177da07735",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/reviews/Review_Record_OBS-061.pdf",
+      "file_name": "Review_Record_OBS-061.pdf",
+      "document_type": "reviews",
+      "size_bytes": 1891,
+      "sha256": "ae70f3fcee0dfdd26fba793b6a74cbc871933ff7445c0aef128c1a487fc852b2",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/tests/Test_Report_TC-102.pdf",
+      "file_name": "Test_Report_TC-102.pdf",
+      "document_type": "tests",
+      "size_bytes": 2084,
+      "sha256": "c6afd430b06a118bc18c9ce9ef7445cf3bf50caada7eeac775d1c27fd96562ef",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/tests/Test_Report_TC-201.pdf",
+      "file_name": "Test_Report_TC-201.pdf",
+      "document_type": "tests",
+      "size_bytes": 2034,
+      "sha256": "48d3fe0bf23bf103ac3757ee8ba552467ab22c63885fa2f60f24ea35ce86863d",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/tests/Test_Report_TC-301.pdf",
+      "file_name": "Test_Report_TC-301.pdf",
+      "document_type": "tests",
+      "size_bytes": 1953,
+      "sha256": "931b725bf349547c7aeb9bb6b1049285a7fb77e525ddf1adf6b3c043b0c172f4",
+      "page_count": 1
+    },
+    {
+      "relative_path": "documents/tests/Test_Report_TC-401.pdf",
+      "file_name": "Test_Report_TC-401.pdf",
+      "document_type": "tests",
+      "size_bytes": 2043,
+      "sha256": "1e6ac86d628e70f60274bcab4c013f33e38e8cbd3d7d20f3d970a883ab8d6cb0",
+      "page_count": 1
+    }
+  ]
+}

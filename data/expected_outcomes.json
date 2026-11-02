@@ -1,0 +1,150 @@
+[
+  {
+    "case_id": "CASE-001",
+    "observation_id": "OBS-023",
+    "scenario": "supported",
+    "expected_assessment": "SUPPORTED",
+    "expected_requirement": "REQ-017",
+    "expected_revision": "Rev01",
+    "expected_code_files": [
+      "data_processor.c"
+    ],
+    "expected_functions": [
+      "process_data"
+    ],
+    "expected_test_ids": [
+      "TC-102"
+    ],
+    "expected_missing_evidence": [],
+    "expected_blocking_items": [],
+    "expected_closure_status": "NOT ASSESSED",
+    "reason": "FRD, code, and explicit failed test evidence support the reported null-input deviation."
+  },
+  {
+    "case_id": "CASE-002",
+    "observation_id": "OBS-031",
+    "scenario": "not_supported",
+    "expected_assessment": "NOT SUPPORTED",
+    "expected_requirement": "REQ-021",
+    "expected_revision": "Rev01",
+    "expected_code_files": [
+      "command_validator.c"
+    ],
+    "expected_functions": [
+      "validate_command"
+    ],
+    "expected_test_ids": [
+      "TC-201"
+    ],
+    "expected_missing_evidence": [],
+    "expected_blocking_items": [],
+    "expected_closure_status": "NOT ASSESSED",
+    "reason": "The supplied implementation and explicit passing test directly contradict the observation claim."
+  },
+  {
+    "case_id": "CASE-003",
+    "observation_id": "OBS-044",
+    "scenario": "inconclusive_missing_evidence",
+    "expected_assessment": "INCONCLUSIVE",
+    "expected_requirement": "REQ-033",
+    "expected_revision": "Rev01",
+    "expected_code_files": [
+      "mode_controller.c"
+    ],
+    "expected_functions": [
+      "request_active_mode"
+    ],
+    "expected_test_ids": [
+      "TC-301"
+    ],
+    "expected_missing_evidence": [
+      "Complete mode-assignment implementation",
+      "Executed test result",
+      "Runtime mode-transition evidence"
+    ],
+    "expected_blocking_items": [
+      "Code scope is insufficient",
+      "Required execution evidence is unavailable"
+    ],
+    "expected_closure_status": "NOT ASSESSED",
+    "reason": "Partial code and an unexecuted test cannot establish the reported runtime behavior."
+  },
+  {
+    "case_id": "CASE-004",
+    "observation_id": "OBS-052",
+    "scenario": "incorrect_requirement_reference",
+    "expected_assessment": "INCONCLUSIVE",
+    "expected_requirement": "REQ-041",
+    "expected_revision": "Unresolved",
+    "expected_code_files": [
+      "alert_manager.c"
+    ],
+    "expected_functions": [
+      "process_alert"
+    ],
+    "expected_test_ids": [],
+    "expected_missing_evidence": [
+      "Authorized correction of the requirement reference",
+      "Applicable test evidence"
+    ],
+    "expected_blocking_items": [
+      "Observation references a requirement that does not define the reported behavior"
+    ],
+    "expected_closure_status": "NOT ASSESSED",
+    "reason": "The explicit REQ-041 reference must not be silently replaced with the semantically similar REQ-042."
+  },
+  {
+    "case_id": "CASE-005",
+    "observation_id": "OBS-061",
+    "scenario": "frd_revision_conflict",
+    "expected_assessment": "INCONCLUSIVE",
+    "expected_requirement": "REQ-050",
+    "expected_revision": "Conflict: Rev01 versus Rev02",
+    "expected_code_files": [
+      "alert_manager.c"
+    ],
+    "expected_functions": [
+      "reset_alert"
+    ],
+    "expected_test_ids": [],
+    "expected_missing_evidence": [
+      "Applicable FRD revision",
+      "Software-to-requirement baseline relationship"
+    ],
+    "expected_blocking_items": [
+      "FRD revision conflict is unresolved"
+    ],
+    "expected_closure_status": "NOT ASSESSED",
+    "reason": "The observed 760 milliseconds conflicts with Rev01 but satisfies Rev02. Applicability is not established."
+  },
+  {
+    "case_id": "CASE-006",
+    "observation_id": "OBS-070",
+    "scenario": "supported_but_not_ready_for_closure",
+    "expected_assessment": "SUPPORTED",
+    "expected_requirement": "REQ-060",
+    "expected_revision": "Rev01",
+    "expected_code_files": [
+      "recovery_manager.c"
+    ],
+    "expected_functions": [
+      "start_recovery"
+    ],
+    "expected_test_ids": [
+      "TC-401"
+    ],
+    "expected_missing_evidence": [
+      "Corrective-action description",
+      "Corrected implementation",
+      "Change record",
+      "Passing post-correction test",
+      "Independent verification evidence"
+    ],
+    "expected_blocking_items": [
+      "Corrective action is not demonstrated",
+      "Correction verification is unavailable"
+    ],
+    "expected_closure_status": "CLOSURE NOT ESTABLISHED",
+    "reason": "The original deviation is supported, but no corrected implementation or acceptable verification evidence exists."
+  }
+]
