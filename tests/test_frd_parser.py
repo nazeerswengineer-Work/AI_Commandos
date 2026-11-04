@@ -8,6 +8,50 @@ from pathlib import Path
 
 import pytest
 
+import hashlib
+
+def directory_fingerprint(
+    directory: Path,
+) -> dict[str, str]:
+    """
+    Calculate hashes for every file under a directory.
+
+    Used to verify that parsing does not modify persistent
+    vector-store data.
+    """
+
+    if not directory.exists():
+        return {}
+
+    fingerprints: dict[str, str] = {}
+
+    for path in sorted(
+        directory.rglob("*")
+    ):
+        if not path.is_file():
+            continue
+
+        digest = hashlib.sha256()
+
+        with path.open("rb") as file_handle:
+            for block in iter(
+                lambda: file_handle.read(65536),
+                b"",
+            ):
+                digest.update(block)
+
+        relative_path = (
+            path
+            .relative_to(directory)
+            .as_posix()
+        )
+
+        fingerprints[
+            relative_path
+        ] = digest.hexdigest()
+
+    return fingerprints
+
 from src.document_parser import (
     extract_document_revision,
     find_requirement_occurrences,
@@ -346,11 +390,19 @@ def test_all_expected_requirement_ids_are_parsed() -> None:
     }
 
 
-def test_parser_does_not_create_embeddings_or_vector_data() -> None:
-    parse_frd_directory(FRD_DIR)
-
+def test_parser_does_not_modify_vector_data() -> None:
     chroma_directory = BASE_DIR / "chroma_db"
 
-    if chroma_directory.exists():
-        generated_entries = tuple(chroma_directory.iterdir())
-        assert generated_entries == ()
+    before = directory_fingerprint(
+        chroma_directory
+    )
+
+    parse_frd_directory(
+        FRD_DIR
+    )
+
+    after = directory_fingerprint(
+        chroma_directory
+    )
+
+    assert after == before
