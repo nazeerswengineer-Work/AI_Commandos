@@ -1,0 +1,147 @@
+2026-09-26 13:38:02 | INFO | reqtrace_ai | app.main:106 | REQTRACE AI startup diagnostics started.
+2026-09-26 13:38:02 | INFO | reqtrace_ai | app.main:107 | Safe startup configuration: {'app_name': 'REQTRACE AI', 'app_environment': 'development', 'ollama_base_url': 'http://localhost:11434', 'ollama_llm_model': 'llama3.2:1b', 'ollama_embed_model': 'nomic-embed-text:latest', 'chroma_db_path': 'D:\\AI Commandos\\Capstone_Project\\ReqTrace_AI\\chroma_db', 'llm_temperature': 0.0, 'llm_num_ctx': 2048, 'llm_num_predict': 512, 'embedding_batch_size': 16, 'vector_top_k': 5, 'bm25_top_k': 5, 'fused_top_k': 6, 'final_context_limit': 4, 'min_relevance_score': 0.3, 'enable_hybrid_retrieval': True, 'enable_reranking': False, 'enable_query_expansion': False, 'enable_response_cache': True, 'enable_debug_mode': False, 'log_level': 'INFO'}
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Project directories | Required project directories are available.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Python version | Python 3.13.14 is active.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic | pydantic 2.13.5 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic-settings | pydantic-settings 2.15.0 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: python-dotenv | python-dotenv 1.2.3 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: httpx | httpx 0.28.1 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: chromadb | chromadb 1.5.9 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: streamlit | streamlit 1.64.0 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: PyMuPDF | PyMuPDF 1.28.2 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: rank-bm25 | rank-bm25 0.2.2 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pytest | pytest 9.1.1 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: Pillow | Pillow 12.3.0 is installed and importable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Log directory | Log directory is writable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Data directory | Data directory is writable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | ChromaDB directory | ChromaDB directory is writable.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Ollama connectivity | Ollama is reachable and returned its model list.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Generation model | Configured generation model 'llama3.2:1b' is available.
+2026-09-26 13:38:06 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Embedding model | Configured embedding model 'nomic-embed-text:latest' is available.
+2026-09-26 13:38:06 | INFO | reqtrace_ai | app.main:128 | REQTRACE AI startup diagnostics completed successfully.
+2026-09-26 14:01:00 | INFO | reqtrace_ai | app.main:106 | REQTRACE AI startup diagnostics started.
+2026-09-26 14:01:00 | INFO | reqtrace_ai | app.main:107 | Safe startup configuration: {'app_name': 'REQTRACE AI', 'app_environment': 'development', 'ollama_base_url': 'http://localhost:11434', 'ollama_llm_model': 'model-that-does-not-exist', 'ollama_embed_model': 'nomic-embed-text:latest', 'chroma_db_path': 'D:\\AI Commandos\\Capstone_Project\\ReqTrace_AI\\chroma_db', 'llm_temperature': 0.0, 'llm_num_ctx': 2048, 'llm_num_predict': 512, 'embedding_batch_size': 16, 'vector_top_k': 5, 'bm25_top_k': 5, 'fused_top_k': 6, 'final_context_limit': 4, 'min_relevance_score': 0.3, 'enable_hybrid_retrieval': True, 'enable_reranking': False, 'enable_query_expansion': False, 'enable_response_cache': True, 'enable_debug_mode': False, 'log_level': 'INFO'}
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Project directories | Required project directories are available.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Python version | Python 3.13.14 is active.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic | pydantic 2.13.5 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic-settings | pydantic-settings 2.15.0 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: python-dotenv | python-dotenv 1.2.3 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: httpx | httpx 0.28.1 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: chromadb | chromadb 1.5.9 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: streamlit | streamlit 1.64.0 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: PyMuPDF | PyMuPDF 1.28.2 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: rank-bm25 | rank-bm25 0.2.2 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pytest | pytest 9.1.1 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: Pillow | Pillow 12.3.0 is installed and importable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Log directory | Log directory is writable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Data directory | Data directory is writable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | ChromaDB directory | ChromaDB directory is writable.
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Ollama connectivity | Ollama is reachable and returned its model list.
+2026-09-26 14:01:04 | ERROR | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | FAIL | Generation model | Configured generation model 'model-that-does-not-exist' is not available. Run: ollama pull model-that-does-not-exist
+2026-09-26 14:01:04 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Embedding model | Configured embedding model 'nomic-embed-text:latest' is available.
+2026-09-26 14:01:04 | ERROR | reqtrace_ai | app.main:133 | REQTRACE AI startup diagnostics found critical failures.
+2026-09-26 14:02:21 | INFO | reqtrace_ai | app.main:106 | REQTRACE AI startup diagnostics started.
+2026-09-26 14:02:21 | INFO | reqtrace_ai | app.main:107 | Safe startup configuration: {'app_name': 'REQTRACE AI', 'app_environment': 'development', 'ollama_base_url': 'http://localhost:11434', 'ollama_llm_model': 'llama3.2:1b', 'ollama_embed_model': 'nomic-embed-text:latest', 'chroma_db_path': 'D:\\AI Commandos\\Capstone_Project\\ReqTrace_AI\\chroma_db', 'llm_temperature': 0.0, 'llm_num_ctx': 2048, 'llm_num_predict': 512, 'embedding_batch_size': 16, 'vector_top_k': 5, 'bm25_top_k': 5, 'fused_top_k': 6, 'final_context_limit': 4, 'min_relevance_score': 0.3, 'enable_hybrid_retrieval': True, 'enable_reranking': False, 'enable_query_expansion': False, 'enable_response_cache': True, 'enable_debug_mode': False, 'log_level': 'INFO'}
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Project directories | Required project directories are available.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Python version | Python 3.13.14 is active.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic | pydantic 2.13.5 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic-settings | pydantic-settings 2.15.0 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: python-dotenv | python-dotenv 1.2.3 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: httpx | httpx 0.28.1 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: chromadb | chromadb 1.5.9 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: streamlit | streamlit 1.64.0 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: PyMuPDF | PyMuPDF 1.28.2 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: rank-bm25 | rank-bm25 0.2.2 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pytest | pytest 9.1.1 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: Pillow | Pillow 12.3.0 is installed and importable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Log directory | Log directory is writable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Data directory | Data directory is writable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | ChromaDB directory | ChromaDB directory is writable.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Ollama connectivity | Ollama is reachable and returned its model list.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Generation model | Configured generation model 'llama3.2:1b' is available.
+2026-09-26 14:02:25 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Embedding model | Configured embedding model 'nomic-embed-text:latest' is available.
+2026-09-26 14:02:25 | INFO | reqtrace_ai | app.main:128 | REQTRACE AI startup diagnostics completed successfully.
+2026-09-26 14:04:33 | INFO | reqtrace_ai | app.main:106 | REQTRACE AI startup diagnostics started.
+2026-09-26 14:04:33 | INFO | reqtrace_ai | app.main:107 | Safe startup configuration: {'app_name': 'REQTRACE AI', 'app_environment': 'development', 'ollama_base_url': 'http://localhost:11434', 'ollama_llm_model': 'llama3.2:1b', 'ollama_embed_model': 'nomic-embed-text:latest', 'chroma_db_path': 'D:\\AI Commandos\\Capstone_Project\\ReqTrace_AI\\chroma_db', 'llm_temperature': 0.0, 'llm_num_ctx': 2048, 'llm_num_predict': 512, 'embedding_batch_size': 16, 'vector_top_k': 5, 'bm25_top_k': 5, 'fused_top_k': 6, 'final_context_limit': 4, 'min_relevance_score': 0.3, 'enable_hybrid_retrieval': True, 'enable_reranking': False, 'enable_query_expansion': False, 'enable_response_cache': True, 'enable_debug_mode': False, 'log_level': 'INFO'}
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Project directories | Required project directories are available.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Python version | Python 3.13.14 is active.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic | pydantic 2.13.5 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic-settings | pydantic-settings 2.15.0 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: python-dotenv | python-dotenv 1.2.3 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: httpx | httpx 0.28.1 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: chromadb | chromadb 1.5.9 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: streamlit | streamlit 1.64.0 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: PyMuPDF | PyMuPDF 1.28.2 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: rank-bm25 | rank-bm25 0.2.2 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pytest | pytest 9.1.1 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: Pillow | Pillow 12.3.0 is installed and importable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Log directory | Log directory is writable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Data directory | Data directory is writable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | ChromaDB directory | ChromaDB directory is writable.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Ollama connectivity | Ollama is reachable and returned its model list.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Generation model | Configured generation model 'llama3.2:1b' is available.
+2026-09-26 14:04:37 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Embedding model | Configured embedding model 'nomic-embed-text:latest' is available.
+2026-09-26 14:04:37 | INFO | reqtrace_ai | app.main:128 | REQTRACE AI startup diagnostics completed successfully.
+2026-09-26 17:22:06 | INFO | reqtrace_ai | app.main:106 | REQTRACE AI startup diagnostics started.
+2026-09-26 17:22:06 | INFO | reqtrace_ai | app.main:107 | Safe startup configuration: {'app_name': 'REQTRACE AI', 'app_environment': 'development', 'ollama_base_url': 'http://localhost:11434', 'ollama_llm_model': 'llama3.2:1b', 'ollama_embed_model': 'nomic-embed-text:latest', 'chroma_db_path': 'D:\\AI Commandos\\Capstone_Project\\ReqTrace_AI\\chroma_db', 'llm_temperature': 0.0, 'llm_num_ctx': 2048, 'llm_num_predict': 512, 'embedding_batch_size': 16, 'vector_top_k': 5, 'bm25_top_k': 5, 'fused_top_k': 6, 'final_context_limit': 4, 'min_relevance_score': 0.3, 'enable_hybrid_retrieval': True, 'enable_reranking': False, 'enable_query_expansion': False, 'enable_response_cache': True, 'enable_debug_mode': False, 'log_level': 'INFO'}
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Project directories | Required project directories are available.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Python version | Python 3.13.14 is active.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic | pydantic 2.13.5 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic-settings | pydantic-settings 2.15.0 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: python-dotenv | python-dotenv 1.2.3 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: httpx | httpx 0.28.1 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: chromadb | chromadb 1.5.9 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: streamlit | streamlit 1.64.0 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: PyMuPDF | PyMuPDF 1.28.2 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: rank-bm25 | rank-bm25 0.2.2 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pytest | pytest 9.1.1 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: Pillow | Pillow 12.3.0 is installed and importable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Log directory | Log directory is writable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Data directory | Data directory is writable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | ChromaDB directory | ChromaDB directory is writable.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Ollama connectivity | Ollama is reachable and returned its model list.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Generation model | Configured generation model 'llama3.2:1b' is available.
+2026-09-26 17:22:11 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Embedding model | Configured embedding model 'nomic-embed-text:latest' is available.
+2026-09-26 17:22:11 | INFO | reqtrace_ai | app.main:128 | REQTRACE AI startup diagnostics completed successfully.
+2026-09-26 18:47:40 | INFO | reqtrace_ai | app.main:106 | REQTRACE AI startup diagnostics started.
+2026-09-26 18:47:40 | INFO | reqtrace_ai | app.main:107 | Safe startup configuration: {'app_name': 'REQTRACE AI', 'app_environment': 'development', 'ollama_base_url': 'http://localhost:11434', 'ollama_llm_model': 'llama3.2:1b', 'ollama_embed_model': 'nomic-embed-text:latest', 'chroma_db_path': 'D:\\AI Commandos\\Capstone_Project\\ReqTrace_AI\\chroma_db', 'llm_temperature': 0.0, 'llm_num_ctx': 2048, 'llm_num_predict': 512, 'embedding_batch_size': 16, 'vector_top_k': 5, 'bm25_top_k': 5, 'fused_top_k': 6, 'final_context_limit': 4, 'min_relevance_score': 0.3, 'enable_hybrid_retrieval': True, 'enable_reranking': False, 'enable_query_expansion': False, 'enable_response_cache': True, 'enable_debug_mode': False, 'log_level': 'INFO'}
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Project directories | Required project directories are available.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Python version | Python 3.13.14 is active.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic | pydantic 2.13.5 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic-settings | pydantic-settings 2.15.0 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: python-dotenv | python-dotenv 1.2.3 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: httpx | httpx 0.28.1 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: chromadb | chromadb 1.5.9 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: streamlit | streamlit 1.64.0 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: PyMuPDF | PyMuPDF 1.28.2 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: rank-bm25 | rank-bm25 0.2.2 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pytest | pytest 9.1.1 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: Pillow | Pillow 12.3.0 is installed and importable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Log directory | Log directory is writable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Data directory | Data directory is writable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | ChromaDB directory | ChromaDB directory is writable.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Ollama connectivity | Ollama is reachable and returned its model list.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Generation model | Configured generation model 'llama3.2:1b' is available.
+2026-09-26 18:47:44 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Embedding model | Configured embedding model 'nomic-embed-text:latest' is available.
+2026-09-26 18:47:44 | INFO | reqtrace_ai | app.main:128 | REQTRACE AI startup diagnostics completed successfully.
+2026-11-04 22:28:58 | INFO | reqtrace_ai | app.main:106 | REQTRACE AI startup diagnostics started.
+2026-11-04 22:28:58 | INFO | reqtrace_ai | app.main:107 | Safe startup configuration: {'app_name': 'REQTRACE AI', 'app_environment': 'development', 'ollama_base_url': 'http://localhost:11434', 'ollama_llm_model': 'llama3.2:1b', 'ollama_embed_model': 'nomic-embed-text:latest', 'chroma_db_path': 'D:\\AI Commandos\\Capstone_Project\\ReqTrace_AI\\chroma_db', 'llm_temperature': 0.0, 'llm_num_ctx': 2048, 'llm_num_predict': 512, 'embedding_batch_size': 16, 'vector_top_k': 5, 'bm25_top_k': 5, 'fused_top_k': 6, 'final_context_limit': 4, 'min_relevance_score': 0.3, 'enable_hybrid_retrieval': True, 'enable_reranking': False, 'enable_query_expansion': False, 'enable_response_cache': True, 'enable_debug_mode': False, 'log_level': 'INFO'}
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Project directories | Required project directories are available.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Python version | Python 3.13.14 is active.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic | pydantic 2.13.5 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pydantic-settings | pydantic-settings 2.15.0 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: python-dotenv | python-dotenv 1.2.3 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: httpx | httpx 0.28.1 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: chromadb | chromadb 1.5.9 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: streamlit | streamlit 1.64.0 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: PyMuPDF | PyMuPDF 1.28.2 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: rank-bm25 | rank-bm25 0.2.2 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: pytest | pytest 9.1.1 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Package: Pillow | Pillow 12.3.0 is installed and importable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Log directory | Log directory is writable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Data directory | Data directory is writable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | ChromaDB directory | ChromaDB directory is writable.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Ollama connectivity | Ollama is reachable and returned its model list.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Generation model | Configured generation model 'llama3.2:1b' is available.
+2026-11-04 22:29:03 | INFO | reqtrace_ai.src.diagnostics | diagnostics.run_startup_diagnostics:454 | PASS | Embedding model | Configured embedding model 'nomic-embed-text:latest' is available.
+2026-11-04 22:29:03 | INFO | reqtrace_ai | app.main:128 | REQTRACE AI startup diagnostics completed successfully.
