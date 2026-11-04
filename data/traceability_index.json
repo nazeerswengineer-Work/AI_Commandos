@@ -1,0 +1,196 @@
+{
+  "requirements": {
+    "REQ-017": [
+      "CODE::data_processor.c::process_data::26-47",
+      "FRD::FRD_Input_Validation_Rev01.pdf::PAGE-1::REQ-017",
+      "OBS::Observation_Report_OBS-023.pdf::PAGE-1::OBS-023",
+      "TEST::Test_Report_TC-102.pdf::PAGE-1::TC-102"
+    ],
+    "REQ-021": [
+      "CODE::command_validator.c::validate_command::22-31",
+      "FRD::FRD_Command_Processing_Rev01.pdf::PAGE-1::REQ-021",
+      "OBS::Observation_Report_OBS-031.pdf::PAGE-1::OBS-031",
+      "TEST::Test_Report_TC-201.pdf::PAGE-1::TC-201"
+    ],
+    "REQ-033": [
+      "CODE::mode_controller.c::request_active_mode::22-36",
+      "FRD::FRD_Mode_Control_Rev01.pdf::PAGE-1::REQ-033",
+      "OBS::Observation_Report_OBS-044.pdf::PAGE-1::OBS-044",
+      "TEST::Test_Report_TC-301.pdf::PAGE-1::TC-301"
+    ],
+    "REQ-041": [
+      "CODE::alert_manager.c::process_alert::26-43",
+      "CODE::alert_manager.c::reset_alert::45-63",
+      "FRD::FRD_Alert_Handling_Rev01.pdf::PAGE-1::REQ-041",
+      "OBS::Observation_Report_OBS-052.pdf::PAGE-1::OBS-052"
+    ],
+    "REQ-042": [
+      "FRD::FRD_Alert_Handling_Rev02.pdf::PAGE-1::REQ-042"
+    ],
+    "REQ-050": [
+      "FRD::FRD_Alert_Handling_Rev01.pdf::PAGE-1::REQ-050",
+      "FRD::FRD_Alert_Handling_Rev02.pdf::PAGE-1::REQ-050",
+      "OBS::Observation_Report_OBS-061.pdf::PAGE-1::OBS-061"
+    ],
+    "REQ-060": [
+      "CODE::recovery_manager.c::start_recovery::23-37",
+      "FRD::FRD_Recovery_Control_Rev01.pdf::PAGE-1::REQ-060",
+      "OBS::Observation_Report_OBS-070.pdf::PAGE-1::OBS-070",
+      "TEST::Test_Report_TC-401.pdf::PAGE-1::TC-401"
+    ]
+  },
+  "observations": {
+    "OBS-023": [
+      "CODE::data_processor.c::process_data::26-47",
+      "OBS::Observation_Report_OBS-023.pdf::PAGE-1::OBS-023",
+      "REVIEW::Review_Record_OBS-023.pdf::PAGE-1::OBS-023"
+    ],
+    "OBS-031": [
+      "CODE::command_validator.c::validate_command::22-31",
+      "OBS::Observation_Report_OBS-031.pdf::PAGE-1::OBS-031",
+      "REVIEW::Review_Record_OBS-031.pdf::PAGE-1::OBS-031"
+    ],
+    "OBS-044": [
+      "CODE::mode_controller.c::request_active_mode::22-36",
+      "OBS::Observation_Report_OBS-044.pdf::PAGE-1::OBS-044",
+      "REVIEW::Review_Record_OBS-044.pdf::PAGE-1::OBS-044"
+    ],
+    "OBS-052": [
+      "CODE::alert_manager.c::process_alert::26-43",
+      "CODE::alert_manager.c::reset_alert::45-63",
+      "OBS::Observation_Report_OBS-052.pdf::PAGE-1::OBS-052",
+      "REVIEW::Review_Record_OBS-052.pdf::PAGE-1::OBS-052"
+    ],
+    "OBS-061": [
+      "OBS::Observation_Report_OBS-061.pdf::PAGE-1::OBS-061",
+      "REVIEW::Review_Record_OBS-061.pdf::PAGE-1::OBS-061"
+    ],
+    "OBS-070": [
+      "CODE::recovery_manager.c::start_recovery::23-37",
+      "OBS::Observation_Report_OBS-070.pdf::PAGE-1::OBS-070",
+      "REVIEW::Closure_Review_OBS-070.pdf::PAGE-1::OBS-070"
+    ]
+  },
+  "tests": {
+    "TC-102": [
+      "CODE::data_processor.c::process_data::26-47",
+      "OBS::Observation_Report_OBS-023.pdf::PAGE-1::OBS-023",
+      "TEST::Test_Report_TC-102.pdf::PAGE-1::TC-102"
+    ],
+    "TC-201": [
+      "CODE::command_validator.c::validate_command::22-31",
+      "OBS::Observation_Report_OBS-031.pdf::PAGE-1::OBS-031",
+      "TEST::Test_Report_TC-201.pdf::PAGE-1::TC-201"
+    ],
+    "TC-301": [
+      "CODE::mode_controller.c::request_active_mode::22-36",
+      "OBS::Observation_Report_OBS-044.pdf::PAGE-1::OBS-044",
+      "TEST::Test_Report_TC-301.pdf::PAGE-1::TC-301"
+    ],
+    "TC-401": [
+      "CODE::recovery_manager.c::start_recovery::23-37",
+      "OBS::Observation_Report_OBS-070.pdf::PAGE-1::OBS-070",
+      "TEST::Test_Report_TC-401.pdf::PAGE-1::TC-401"
+    ]
+  },
+  "files": {
+    "Closure_Review_OBS-070.pdf": [
+      "REVIEW::Closure_Review_OBS-070.pdf::PAGE-1::OBS-070"
+    ],
+    "FRD_Alert_Handling_Rev01.pdf": [
+      "FRD::FRD_Alert_Handling_Rev01.pdf::PAGE-1::REQ-041",
+      "FRD::FRD_Alert_Handling_Rev01.pdf::PAGE-1::REQ-050"
+    ],
+    "FRD_Alert_Handling_Rev02.pdf": [
+      "FRD::FRD_Alert_Handling_Rev02.pdf::PAGE-1::REQ-042",
+      "FRD::FRD_Alert_Handling_Rev02.pdf::PAGE-1::REQ-050"
+    ],
+    "FRD_Command_Processing_Rev01.pdf": [
+      "FRD::FRD_Command_Processing_Rev01.pdf::PAGE-1::REQ-021"
+    ],
+    "FRD_Input_Validation_Rev01.pdf": [
+      "FRD::FRD_Input_Validation_Rev01.pdf::PAGE-1::REQ-017"
+    ],
+    "FRD_Mode_Control_Rev01.pdf": [
+      "FRD::FRD_Mode_Control_Rev01.pdf::PAGE-1::REQ-033"
+    ],
+    "FRD_Recovery_Control_Rev01.pdf": [
+      "FRD::FRD_Recovery_Control_Rev01.pdf::PAGE-1::REQ-060"
+    ],
+    "Review_Record_OBS-023.pdf": [
+      "REVIEW::Review_Record_OBS-023.pdf::PAGE-1::OBS-023"
+    ],
+    "Review_Record_OBS-031.pdf": [
+      "REVIEW::Review_Record_OBS-031.pdf::PAGE-1::OBS-031"
+    ],
+    "Review_Record_OBS-044.pdf": [
+      "REVIEW::Review_Record_OBS-044.pdf::PAGE-1::OBS-044"
+    ],
+    "Review_Record_OBS-052.pdf": [
+      "REVIEW::Review_Record_OBS-052.pdf::PAGE-1::OBS-052"
+    ],
+    "Review_Record_OBS-061.pdf": [
+      "REVIEW::Review_Record_OBS-061.pdf::PAGE-1::OBS-061"
+    ],
+    "Test_Report_TC-102.pdf": [
+      "TEST::Test_Report_TC-102.pdf::PAGE-1::TC-102"
+    ],
+    "Test_Report_TC-201.pdf": [
+      "TEST::Test_Report_TC-201.pdf::PAGE-1::TC-201"
+    ],
+    "Test_Report_TC-301.pdf": [
+      "TEST::Test_Report_TC-301.pdf::PAGE-1::TC-301"
+    ],
+    "Test_Report_TC-401.pdf": [
+      "TEST::Test_Report_TC-401.pdf::PAGE-1::TC-401"
+    ],
+    "alert_manager.c": [
+      "CODE::alert_manager.c::process_alert::26-43",
+      "CODE::alert_manager.c::reset_alert::45-63",
+      "OBS::Observation_Report_OBS-052.pdf::PAGE-1::OBS-052",
+      "OBS::Observation_Report_OBS-061.pdf::PAGE-1::OBS-061"
+    ],
+    "command_validator.c": [
+      "CODE::command_validator.c::validate_command::22-31",
+      "OBS::Observation_Report_OBS-031.pdf::PAGE-1::OBS-031"
+    ],
+    "data_processor.c": [
+      "CODE::data_processor.c::process_data::26-47",
+      "OBS::Observation_Report_OBS-023.pdf::PAGE-1::OBS-023"
+    ],
+    "mode_controller.c": [
+      "CODE::mode_controller.c::request_active_mode::22-36",
+      "OBS::Observation_Report_OBS-044.pdf::PAGE-1::OBS-044"
+    ],
+    "recovery_manager.c": [
+      "CODE::recovery_manager.c::start_recovery::23-37",
+      "OBS::Observation_Report_OBS-070.pdf::PAGE-1::OBS-070"
+    ]
+  },
+  "functions": {
+    "process_alert": [
+      "CODE::alert_manager.c::process_alert::26-43",
+      "OBS::Observation_Report_OBS-052.pdf::PAGE-1::OBS-052"
+    ],
+    "process_data": [
+      "CODE::data_processor.c::process_data::26-47",
+      "OBS::Observation_Report_OBS-023.pdf::PAGE-1::OBS-023"
+    ],
+    "request_active_mode": [
+      "CODE::mode_controller.c::request_active_mode::22-36",
+      "OBS::Observation_Report_OBS-044.pdf::PAGE-1::OBS-044"
+    ],
+    "reset_alert": [
+      "CODE::alert_manager.c::reset_alert::45-63",
+      "OBS::Observation_Report_OBS-061.pdf::PAGE-1::OBS-061"
+    ],
+    "start_recovery": [
+      "CODE::recovery_manager.c::start_recovery::23-37",
+      "OBS::Observation_Report_OBS-070.pdf::PAGE-1::OBS-070"
+    ],
+    "validate_command": [
+      "CODE::command_validator.c::validate_command::22-31",
+      "OBS::Observation_Report_OBS-031.pdf::PAGE-1::OBS-031"
+    ]
+  }
+}
