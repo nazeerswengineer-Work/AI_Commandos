@@ -1,0 +1,77 @@
+[
+  {
+    "case_id": "RET-001",
+    "query": "null pointer invalid input exception",
+    "requirement_ids": ["REQ-017"],
+    "observation_ids": ["OBS-023"],
+    "test_case_ids": ["TC-102"],
+    "required_document_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "RET-002",
+    "query": "command identifier 17 should be rejected",
+    "requirement_ids": ["REQ-021"],
+    "observation_ids": ["OBS-031"],
+    "test_case_ids": ["TC-201"],
+    "required_document_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "RET-003",
+    "query": "readiness input unavailable",
+    "requirement_ids": ["REQ-033"],
+    "observation_ids": ["OBS-044"],
+    "test_case_ids": ["TC-301"],
+    "required_document_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "RET-004",
+    "query": "OBS-052",
+    "requirement_ids": ["REQ-041"],
+    "observation_ids": ["OBS-052"],
+    "test_case_ids": [],
+    "required_document_types": [
+      "observation",
+      "frd"
+    ]
+  },
+  {
+    "case_id": "RET-005",
+    "query": "REQ-050",
+    "requirement_ids": ["REQ-050"],
+    "observation_ids": ["OBS-061"],
+    "test_case_ids": [],
+    "required_document_types": [
+      "frd",
+      "observation",
+      "review"
+    ]
+  },
+  {
+    "case_id": "RET-006",
+    "query": "recovery counter initialize zero",
+    "requirement_ids": ["REQ-060"],
+    "observation_ids": ["OBS-070"],
+    "test_case_ids": ["TC-401"],
+    "required_document_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  }
+]
