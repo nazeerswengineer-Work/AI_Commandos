@@ -1,0 +1,115 @@
+[
+  {
+    "case_id": "APP-001",
+    "query": "OBS-023",
+    "evaluate_closure": false,
+    "assessment": "SUPPORTED",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-017",
+      "OBS-023",
+      "TC-102"
+    ],
+    "required_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "APP-002",
+    "query": "OBS-031",
+    "evaluate_closure": false,
+    "assessment": "NOT SUPPORTED",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-021",
+      "OBS-031",
+      "TC-201"
+    ],
+    "required_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "APP-003",
+    "query": "OBS-044",
+    "evaluate_closure": false,
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-033",
+      "OBS-044",
+      "TC-301"
+    ],
+    "required_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "APP-004",
+    "query": "OBS-052",
+    "evaluate_closure": false,
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-041",
+      "OBS-052"
+    ],
+    "forbidden_authoritative_ids": [
+      "REQ-042"
+    ],
+    "required_types": [
+      "frd",
+      "observation"
+    ]
+  },
+  {
+    "case_id": "APP-005",
+    "query": "REQ-050",
+    "evaluate_closure": false,
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-050",
+      "OBS-061"
+    ],
+    "required_types": [
+      "frd",
+      "observation"
+    ],
+    "minimum_frd_citations": 2
+  },
+  {
+    "case_id": "APP-006",
+    "query": "What is the closure status of OBS-070?",
+    "evaluate_closure": false,
+    "automatic_closure_expected": true,
+    "assessment": "SUPPORTED",
+    "confidence": "HIGH",
+    "closure_status": "CLOSURE NOT ESTABLISHED",
+    "required_ids": [
+      "REQ-060",
+      "OBS-070",
+      "TC-401"
+    ],
+    "required_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  }
+]
