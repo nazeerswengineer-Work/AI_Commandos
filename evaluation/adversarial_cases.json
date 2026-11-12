@@ -1,0 +1,32 @@
+[
+  {
+    "case_id": "ADV-001",
+    "description": "Baseline grounded package",
+    "expected_pass": true
+  },
+  {
+    "case_id": "ADV-002",
+    "description": "Altered deterministic assessment",
+    "expected_pass": false
+  },
+  {
+    "case_id": "ADV-003",
+    "description": "Fabricated citation CIT-999",
+    "expected_pass": false
+  },
+  {
+    "case_id": "ADV-004",
+    "description": "Unsupported requirement REQ-999",
+    "expected_pass": false
+  },
+  {
+    "case_id": "ADV-005",
+    "description": "Removed safety prohibition",
+    "expected_pass": false
+  },
+  {
+    "case_id": "ADV-006",
+    "description": "Prompt-like text inside source evidence",
+    "expected_pass": true
+  }
+]

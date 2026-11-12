@@ -1,0 +1,82 @@
+[
+  {
+    "case_id": "NAR-001",
+    "query": "OBS-023",
+    "assessment": "SUPPORTED",
+    "confidence": "HIGH",
+    "closure": false,
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-017",
+      "OBS-023",
+      "TC-102"
+    ]
+  },
+  {
+    "case_id": "NAR-002",
+    "query": "OBS-031",
+    "assessment": "NOT SUPPORTED",
+    "confidence": "HIGH",
+    "closure": false,
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-021",
+      "OBS-031",
+      "TC-201"
+    ]
+  },
+  {
+    "case_id": "NAR-003",
+    "query": "OBS-044",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure": false,
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-033",
+      "OBS-044",
+      "TC-301"
+    ]
+  },
+  {
+    "case_id": "NAR-004",
+    "query": "OBS-052",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure": false,
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-041",
+      "OBS-052"
+    ],
+    "forbidden_ids": [
+      "REQ-042"
+    ]
+  },
+  {
+    "case_id": "NAR-005",
+    "query": "REQ-050",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure": false,
+    "closure_status": "NOT ASSESSED",
+    "required_ids": [
+      "REQ-050",
+      "OBS-061"
+    ],
+    "must_preserve_revision_conflict": true
+  },
+  {
+    "case_id": "NAR-006",
+    "query": "OBS-070",
+    "assessment": "SUPPORTED",
+    "confidence": "HIGH",
+    "closure": true,
+    "closure_status": "CLOSURE NOT ESTABLISHED",
+    "required_ids": [
+      "REQ-060",
+      "OBS-070",
+      "TC-401"
+    ]
+  }
+]

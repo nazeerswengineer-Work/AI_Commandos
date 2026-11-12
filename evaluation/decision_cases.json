@@ -1,0 +1,50 @@
+[
+  {
+    "case_id": "DEC-001",
+    "query": "OBS-023",
+    "assessment": "SUPPORTED",
+    "confidence": "HIGH",
+    "evaluate_closure": false,
+    "closure_status": "NOT ASSESSED"
+  },
+  {
+    "case_id": "DEC-002",
+    "query": "OBS-031",
+    "assessment": "NOT SUPPORTED",
+    "confidence": "HIGH",
+    "evaluate_closure": false,
+    "closure_status": "NOT ASSESSED"
+  },
+  {
+    "case_id": "DEC-003",
+    "query": "OBS-044",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "evaluate_closure": false,
+    "closure_status": "NOT ASSESSED"
+  },
+  {
+    "case_id": "DEC-004",
+    "query": "OBS-052",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "evaluate_closure": false,
+    "closure_status": "NOT ASSESSED"
+  },
+  {
+    "case_id": "DEC-005",
+    "query": "REQ-050",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "evaluate_closure": false,
+    "closure_status": "NOT ASSESSED"
+  },
+  {
+    "case_id": "DEC-006",
+    "query": "OBS-070",
+    "assessment": "SUPPORTED",
+    "confidence": "HIGH",
+    "evaluate_closure": true,
+    "closure_status": "CLOSURE NOT ESTABLISHED"
+  }
+]

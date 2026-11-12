@@ -1,23 +1,28 @@
 """
 Controlled engineering-family expansion for REQTRACE AI.
 
-Phase 11C expands retrieval anchors through explicit source-derived
-engineering metadata:
+Phase 11C expands retrieval anchors using only explicit
+source-derived engineering metadata:
 
 - requirement_id
 - observation_id
 - test_case_id
 
-A shared filename is not treated as traceability.
+Important rules:
 
-A shared function name is not independently treated as traceability.
+1. A shared file name is NOT treated as traceability.
+2. A shared function name alone is NOT treated as traceability.
+3. Semantic similarity does NOT create permanent traceability.
+4. Observation requirement references are NOT rewritten.
+5. Multiple FRD revisions are preserved.
+6. Expansion continues until no additional matching evidence is found.
 
-Expansion does not:
-- infer new engineering links
-- rewrite observation references
-- select an applicable requirement revision
-- make an engineering assessment
-- determine closure readiness
+This module does not:
+
+- calculate SUPPORTED / NOT SUPPORTED / INCONCLUSIVE
+- choose an applicable FRD revision
+- calculate closure readiness
+- invoke an LLM
 """
 
 from __future__ import annotations
@@ -31,7 +36,7 @@ from src.retrieval import RetrievedEvidence
 
 @dataclass(frozen=True)
 class TraceabilityKeys:
-    """Explicit engineering keys used during family expansion."""
+    """Explicit engineering identifiers used for family expansion."""
 
     requirement_ids: tuple[str, ...]
     observation_ids: tuple[str, ...]
@@ -39,7 +44,7 @@ class TraceabilityKeys:
 
     @property
     def is_empty(self) -> bool:
-        """Return True when no explicit engineering key is available."""
+        """Return True when no explicit engineering IDs exist."""
 
         return not (
             self.requirement_ids
@@ -52,45 +57,86 @@ class TraceabilityKeys:
 class TraceabilityExpansionResult:
     """Result of controlled engineering-family expansion."""
 
-    anchors: tuple[RetrievedEvidence, ...]
-    expanded: tuple[RetrievedEvidence, ...]
+    anchors: tuple[
+        RetrievedEvidence,
+        ...
+    ]
+
+    expanded: tuple[
+        RetrievedEvidence,
+        ...
+    ]
+
     keys: TraceabilityKeys
+
     iterations: int
 
     @property
-    def all_evidence(self) -> tuple[RetrievedEvidence, ...]:
-        """Return anchors followed by expanded evidence."""
+    def all_evidence(
+        self,
+    ) -> tuple[
+        RetrievedEvidence,
+        ...
+    ]:
+        """
+        Return anchors followed by expanded evidence.
 
-        combined: list[RetrievedEvidence] = []
+        Duplicate evidence IDs are removed while preserving order.
+        """
+
+        combined: list[
+            RetrievedEvidence
+        ] = []
+
         seen: set[str] = set()
 
         for item in self.anchors:
+
             if item.evidence_id in seen:
                 continue
 
-            seen.add(item.evidence_id)
-            combined.append(item)
+            seen.add(
+                item.evidence_id
+            )
+
+            combined.append(
+                item
+            )
 
         for item in self.expanded:
+
             if item.evidence_id in seen:
                 continue
 
-            seen.add(item.evidence_id)
-            combined.append(item)
+            seen.add(
+                item.evidence_id
+            )
 
-        return tuple(combined)
+            combined.append(
+                item
+            )
+
+        return tuple(
+            combined
+        )
 
 
 def ordered_unique(
     values: list[str],
 ) -> tuple[str, ...]:
-    """Return ordered, duplicate-free, non-empty strings."""
+    """
+    Return ordered, duplicate-free, non-empty strings.
+    """
 
     output: list[str] = []
+
     seen: set[str] = set()
 
     for value in values:
-        clean_value = str(value).strip()
+
+        clean_value = str(
+            value
+        ).strip()
 
         if not clean_value:
             continue
@@ -98,61 +144,103 @@ def ordered_unique(
         if clean_value in seen:
             continue
 
-        seen.add(clean_value)
-        output.append(clean_value)
+        seen.add(
+            clean_value
+        )
 
-    return tuple(output)
+        output.append(
+            clean_value
+        )
+
+    return tuple(
+        output
+    )
 
 
 def collect_traceability_keys(
-    evidence: list[RetrievedEvidence]
-    | tuple[RetrievedEvidence, ...],
+    evidence: list[
+        RetrievedEvidence
+    ]
+    | tuple[
+        RetrievedEvidence,
+        ...
+    ],
 ) -> TraceabilityKeys:
-    """Collect explicit REQ, OBS and TC identifiers."""
+    """
+    Collect explicit REQ, OBS and TC identifiers from evidence.
+
+    Only explicit metadata is considered authoritative.
+    """
 
     requirement_ids: list[str] = []
+
     observation_ids: list[str] = []
+
     test_case_ids: list[str] = []
 
     for item in evidence:
-        metadata = item.metadata
 
-        requirement_id = metadata.get(
-            "requirement_id"
+        metadata = (
+            item.metadata
         )
 
-        observation_id = metadata.get(
-            "observation_id"
+        requirement_id = (
+            metadata.get(
+                "requirement_id"
+            )
         )
 
-        test_case_id = metadata.get(
-            "test_case_id"
+        observation_id = (
+            metadata.get(
+                "observation_id"
+            )
+        )
+
+        test_case_id = (
+            metadata.get(
+                "test_case_id"
+            )
         )
 
         if requirement_id:
+
             requirement_ids.append(
-                str(requirement_id)
+                str(
+                    requirement_id
+                )
             )
 
         if observation_id:
+
             observation_ids.append(
-                str(observation_id)
+                str(
+                    observation_id
+                )
             )
 
         if test_case_id:
+
             test_case_ids.append(
-                str(test_case_id)
+                str(
+                    test_case_id
+                )
             )
 
     return TraceabilityKeys(
-        requirement_ids=ordered_unique(
-            requirement_ids
+        requirement_ids=(
+            ordered_unique(
+                requirement_ids
+            )
         ),
-        observation_ids=ordered_unique(
-            observation_ids
+        observation_ids=(
+            ordered_unique(
+                observation_ids
+            )
         ),
-        test_case_ids=ordered_unique(
-            test_case_ids
+        test_case_ids=(
+            ordered_unique(
+                test_case_ids
+            )
         ),
     )
 
@@ -161,7 +249,9 @@ def merge_traceability_keys(
     first: TraceabilityKeys,
     second: TraceabilityKeys,
 ) -> TraceabilityKeys:
-    """Merge two key sets while preserving deterministic order."""
+    """
+    Merge two traceability key sets while preserving order.
+    """
 
     requirement_values = list(
         first.requirement_ids
@@ -188,14 +278,20 @@ def merge_traceability_keys(
     )
 
     return TraceabilityKeys(
-        requirement_ids=ordered_unique(
-            requirement_values
+        requirement_ids=(
+            ordered_unique(
+                requirement_values
+            )
         ),
-        observation_ids=ordered_unique(
-            observation_values
+        observation_ids=(
+            ordered_unique(
+                observation_values
+            )
         ),
-        test_case_ids=ordered_unique(
-            test_values
+        test_case_ids=(
+            ordered_unique(
+                test_values
+            )
         ),
     )
 
@@ -205,12 +301,22 @@ def record_matches_keys(
     keys: TraceabilityKeys,
 ) -> bool:
     """
-    Check whether evidence shares an explicit engineering identifier.
+    Determine whether evidence shares an explicit engineering ID.
 
-    Filename and function-name equality are deliberately excluded.
+    Only these relationships are accepted:
+
+    - requirement_id
+    - observation_id
+    - test_case_id
+
+    File-name matching is deliberately excluded.
+
+    Function-name matching is deliberately excluded.
     """
 
-    metadata = record.metadata
+    metadata = (
+        record.metadata
+    )
 
     requirement_match = bool(
         metadata.requirement_id
@@ -236,14 +342,18 @@ def record_matches_keys(
         test_match,
     )
 
-    return any(checks)
+    return any(
+        checks
+    )
 
 
 def evidence_record_to_retrieved(
     record: EvidenceRecord,
     rank: int,
 ) -> RetrievedEvidence:
-    """Convert one corpus record into traceability evidence."""
+    """
+    Convert one validated corpus record into traceability evidence.
+    """
 
     return RetrievedEvidence(
         evidence_id=(
@@ -254,12 +364,16 @@ def evidence_record_to_retrieved(
             .document_type
             .value
         ),
-        content=record.content,
+        content=(
+            record.content
+        ),
         metadata=(
             record.metadata
             .to_chroma_metadata()
         ),
-        retrieval_method="traceability",
+        retrieval_method=(
+            "traceability"
+        ),
         score=1.0,
         rank=rank,
     )
@@ -267,89 +381,171 @@ def evidence_record_to_retrieved(
 
 def expand_engineering_family(
     corpus: EvidenceCorpus,
-    anchors: list[RetrievedEvidence]
-    | tuple[RetrievedEvidence, ...],
+    anchors: list[
+        RetrievedEvidence
+    ]
+    | tuple[
+        RetrievedEvidence,
+        ...
+    ],
     *,
     maximum_iterations: int = 3,
     maximum_results: int = 20,
 ) -> TraceabilityExpansionResult:
     """
-    Expand an evidence family through explicit engineering IDs.
+    Expand an engineering evidence family using explicit IDs.
 
     Expansion is iterative.
 
     Example:
 
-        REQ-021 anchor
+        OBS-023
             |
-            +--> OBS-031
-            +--> TC-201
-            +--> validate_command code
-                        |
-                        +--> Review OBS-031
+            +-- REQ-017
+            |
+            +-- TC-102
+            |
+            +-- data_processor.c
+            |
+            +-- Test Report TC-102
+            |
+            +-- Review OBS-023
 
-    Expansion stops when:
-    - no new evidence is found
-    - no new keys are discovered
-    - maximum_iterations is reached
-    - maximum_results is reached
+    Important termination rule:
+
+    Expansion does NOT stop merely because an iteration discovers
+    no new engineering IDs.
+
+    Multiple valid evidence records may share the same IDs.
+
+    Expansion stops only when:
+
+    1. no new evidence records are discovered,
+    2. maximum_iterations is reached, or
+    3. maximum_results is reached.
     """
 
     if maximum_iterations < 1:
+
         raise ValueError(
             "maximum_iterations must be positive."
         )
 
     if maximum_results < 1:
+
         raise ValueError(
             "maximum_results must be positive."
         )
 
-    anchor_list: list[RetrievedEvidence] = []
+    # ---------------------------------------------------------
+    # Step 1
+    #
+    # Deduplicate anchors.
+    # ---------------------------------------------------------
+
+    anchor_list: list[
+        RetrievedEvidence
+    ] = []
+
     anchor_ids: set[str] = set()
 
     for item in anchors:
-        if item.evidence_id in anchor_ids:
+
+        if (
+            item.evidence_id
+            in anchor_ids
+        ):
             continue
 
-        anchor_ids.add(item.evidence_id)
-        anchor_list.append(item)
+        anchor_ids.add(
+            item.evidence_id
+        )
 
-    keys = collect_traceability_keys(
-        anchor_list
+        anchor_list.append(
+            item
+        )
+
+    # ---------------------------------------------------------
+    # Step 2
+    #
+    # Extract explicit engineering IDs from anchors.
+    # ---------------------------------------------------------
+
+    keys = (
+        collect_traceability_keys(
+            anchor_list
+        )
     )
 
-    if not anchor_list or keys.is_empty:
+    # No anchor or no engineering ID means there is nothing
+    # authoritative to expand.
+
+    if (
+        not anchor_list
+        or keys.is_empty
+    ):
+
         return TraceabilityExpansionResult(
-            anchors=tuple(anchor_list),
+            anchors=tuple(
+                anchor_list
+            ),
             expanded=(),
             keys=keys,
             iterations=0,
         )
 
-    expanded: list[RetrievedEvidence] = []
+    # ---------------------------------------------------------
+    # Step 3
+    #
+    # Prepare expansion state.
+    # ---------------------------------------------------------
+
+    expanded: list[
+        RetrievedEvidence
+    ] = []
+
     selected_ids: set[str] = set(
         anchor_ids
     )
 
     completed_iterations = 0
 
+    # ---------------------------------------------------------
+    # Step 4
+    #
+    # Iteratively collect every corpus record sharing an
+    # authoritative engineering ID.
+    # ---------------------------------------------------------
+
     for iteration in range(
         1,
         maximum_iterations + 1,
     ):
-        completed_iterations = iteration
+
+        completed_iterations = (
+            iteration
+        )
 
         iteration_results: list[
             RetrievedEvidence
         ] = []
 
+        # -----------------------------------------------------
+        # Search the complete validated corpus using the
+        # currently known engineering identifiers.
+        # -----------------------------------------------------
+
         for record in corpus.records:
+
             evidence_id = (
-                record.metadata.evidence_id
+                record.metadata
+                .evidence_id
             )
 
-            if evidence_id in selected_ids:
+            if (
+                evidence_id
+                in selected_ids
+            ):
                 continue
 
             if not record_matches_keys(
@@ -358,14 +554,18 @@ def expand_engineering_family(
             ):
                 continue
 
+            rank = (
+                len(expanded)
+                + len(
+                    iteration_results
+                )
+                + 1
+            )
+
             retrieved = (
                 evidence_record_to_retrieved(
                     record,
-                    rank=(
-                        len(expanded)
-                        + len(iteration_results)
-                        + 1
-                    ),
+                    rank=rank,
                 )
             )
 
@@ -379,37 +579,72 @@ def expand_engineering_family(
 
             if (
                 len(expanded)
-                + len(iteration_results)
+                + len(
+                    iteration_results
+                )
                 >= maximum_results
             ):
                 break
 
+        # -----------------------------------------------------
+        # Termination condition:
+        #
+        # No new evidence records were discovered.
+        # -----------------------------------------------------
+
         if not iteration_results:
             break
+
+        # -----------------------------------------------------
+        # Add newly discovered evidence records.
+        # -----------------------------------------------------
 
         expanded.extend(
             iteration_results
         )
 
-        new_keys = collect_traceability_keys(
-            iteration_results
+        # -----------------------------------------------------
+        # Extract any additional explicit engineering IDs
+        # discovered in the new evidence.
+        #
+        # IMPORTANT:
+        #
+        # We do NOT stop when no new IDs appear.
+        #
+        # Another iteration is still allowed so all evidence
+        # sharing the already-known IDs can be collected.
+        # -----------------------------------------------------
+
+        new_keys = (
+            collect_traceability_keys(
+                iteration_results
+            )
         )
 
-        merged_keys = merge_traceability_keys(
-            keys,
-            new_keys,
+        keys = (
+            merge_traceability_keys(
+                keys,
+                new_keys,
+            )
         )
 
-        if merged_keys == keys:
-            keys = merged_keys
+        # -----------------------------------------------------
+        # Result-limit termination.
+        # -----------------------------------------------------
+
+        if (
+            len(expanded)
+            >= maximum_results
+        ):
             break
 
-        keys = merged_keys
+    # ---------------------------------------------------------
+    # Step 5
+    #
+    # Reassign deterministic one-based expansion ranks.
+    # ---------------------------------------------------------
 
-        if len(expanded) >= maximum_results:
-            break
-
-    reranked_expanded: list[
+    ranked_expanded: list[
         RetrievedEvidence
     ] = []
 
@@ -417,27 +652,46 @@ def expand_engineering_family(
         expanded,
         start=1,
     ):
-        reranked_expanded.append(
+
+        ranked_expanded.append(
             RetrievedEvidence(
-                evidence_id=item.evidence_id,
+                evidence_id=(
+                    item.evidence_id
+                ),
                 document_type=(
                     item.document_type
                 ),
-                content=item.content,
-                metadata=item.metadata,
+                content=(
+                    item.content
+                ),
+                metadata=(
+                    item.metadata
+                ),
                 retrieval_method=(
                     item.retrieval_method
                 ),
-                score=item.score,
+                score=(
+                    item.score
+                ),
                 rank=rank,
             )
         )
 
+    # ---------------------------------------------------------
+    # Step 6
+    #
+    # Return final controlled expansion.
+    # ---------------------------------------------------------
+
     return TraceabilityExpansionResult(
-        anchors=tuple(anchor_list),
+        anchors=tuple(
+            anchor_list
+        ),
         expanded=tuple(
-            reranked_expanded
+            ranked_expanded
         ),
         keys=keys,
-        iterations=completed_iterations,
+        iterations=(
+            completed_iterations
+        ),
     )

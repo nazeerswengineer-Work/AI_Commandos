@@ -1,0 +1,83 @@
+[
+  {
+    "case_id": "PKG-001",
+    "query": "OBS-023",
+    "assessment": "SUPPORTED",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "evaluate_closure": false,
+    "required_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "PKG-002",
+    "query": "OBS-031",
+    "assessment": "NOT SUPPORTED",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "evaluate_closure": false,
+    "required_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "PKG-003",
+    "query": "OBS-044",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "evaluate_closure": false,
+    "required_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  },
+  {
+    "case_id": "PKG-004",
+    "query": "OBS-052",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "evaluate_closure": false,
+    "required_types": [
+      "frd",
+      "observation"
+    ]
+  },
+  {
+    "case_id": "PKG-005",
+    "query": "REQ-050",
+    "assessment": "INCONCLUSIVE",
+    "confidence": "HIGH",
+    "closure_status": "NOT ASSESSED",
+    "evaluate_closure": false,
+    "required_types": [
+      "frd",
+      "observation",
+      "review"
+    ]
+  },
+  {
+    "case_id": "PKG-006",
+    "query": "OBS-070",
+    "assessment": "SUPPORTED",
+    "confidence": "HIGH",
+    "closure_status": "CLOSURE NOT ESTABLISHED",
+    "evaluate_closure": true,
+    "required_types": [
+      "frd",
+      "observation",
+      "code",
+      "test"
+    ]
+  }
+]

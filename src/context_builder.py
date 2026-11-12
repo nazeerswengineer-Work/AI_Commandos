@@ -237,7 +237,16 @@ def select_protected_exact_evidence(
 
     for item in exact:
 
-        if item.document_type in represented_types:
+        if (
+            item.document_type
+            not in CORE_ENGINEERING_TYPES
+        ):
+            continue
+
+        if (
+            item.document_type
+            in represented_types
+        ):
             continue
 
         selected.append(
