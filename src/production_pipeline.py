@@ -482,7 +482,7 @@ class ProductionPipelineConfig:
         "llama3.2:1b"
     )
 
-    maximum_output_tokens: int = 450
+    maximum_output_tokens: int = 350
 
     context_window: int = 4096
 
@@ -497,6 +497,8 @@ class ProductionPipelineConfig:
     seed: int = 42
 
     maximum_excerpt_characters: int = 500
+
+    keep_alive: str = "15m"
 
     def __post_init__(
         self,
@@ -800,6 +802,10 @@ class ReqTraceProductionPipeline:
                 maximum_output_tokens=(
                     self.config
                     .maximum_output_tokens
+                ),
+
+                keep_alive=(
+                    self.config.keep_alive
                 ),
             )
         )

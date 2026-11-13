@@ -35,6 +35,9 @@ from src.production_pipeline import (
     ReqTraceProductionPipeline,
     detect_closure_intent,
 )
+from src.identifier_integrity import (
+    ExplicitIdentifierNotFound,
+)
 
 
 # =====================================================================
@@ -136,7 +139,7 @@ def create_pipeline(
         ),
         narration_model="llama3.2:1b",
         context_window=4096,
-        maximum_output_tokens=450,
+        maximum_output_tokens=350,
         temperature=0.1,
         top_p=0.8,
         top_k=20,
@@ -1429,6 +1432,40 @@ if submitted:
         st.session_state[
             "reqtrace_closure_auto_detected"
         ] = automatic_only
+
+    except ExplicitIdentifierNotFound as exc:
+
+        st.warning(
+            (
+                "The requested engineering identifier "
+                "was not found in the authoritative "
+                "evidence corpus."
+            ),
+            icon="⚠️",
+        )
+
+        st.markdown(
+            "**Missing identifier(s)**"
+        )
+
+        for identifier in (
+            exc.missing_ids
+        ):
+
+            st.code(
+                identifier,
+                language=None,
+            )
+
+        st.info(
+            (
+                "REQTRACE AI did not substitute another "
+                "requirement, observation, or test case."
+            ),
+            icon="ℹ️",
+        )
+
+        st.stop()
 
     except ValueError as exc:
 

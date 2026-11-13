@@ -57,7 +57,7 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--max-tokens",
         type=int,
-        default=900,
+        default=350,
     )
 
     return parser.parse_args()

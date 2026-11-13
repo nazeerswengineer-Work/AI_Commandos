@@ -88,10 +88,10 @@ class NarrationClientConfig:
 
     seed: int = 42
 
-    context_window: int = 8192
-    maximum_output_tokens: int = 900
+    context_window: int = 4096
+    maximum_output_tokens: int = 350
 
-    keep_alive: str = "5m"
+    keep_alive: str = "15m"
 
     def __post_init__(
         self,
@@ -437,6 +437,16 @@ class OllamaNarrationClient:
             prompt
         )
 
+        """ print(
+        "Narration runtime:",
+        {
+            "model": payload["model"],
+            "num_ctx": payload["options"]["num_ctx"],
+            "num_predict": payload["options"]["num_predict"],
+            "keep_alive": payload["keep_alive"],
+        },
+) """
+
         request_started = (
             time.perf_counter()
         )
@@ -544,6 +554,30 @@ class OllamaNarrationClient:
             else measured_duration
         )
 
+        load_duration_seconds=(
+            nanoseconds_to_seconds(
+                response_payload.get(
+                    "load_duration"
+                )
+            )
+        ),
+
+        prompt_eval_duration_seconds=(
+            nanoseconds_to_seconds(
+                response_payload.get(
+                    "prompt_eval_duration"
+                )
+            )
+        ),
+
+        eval_duration_seconds=(
+            nanoseconds_to_seconds(
+                response_payload.get(
+                    "eval_duration"
+                )
+            )
+        ),
+
         return NarrationResponse(
             model=model_name,
             text=narration_text,
@@ -571,3 +605,42 @@ class OllamaNarrationClient:
                 generation_duration
             ),
         )
+
+@property
+def prompt_tokens_per_second(
+    self,
+) -> float | None:
+
+    if (
+        self.prompt_tokens is None
+        or self.prompt_eval_duration_seconds
+        is None
+        or self.prompt_eval_duration_seconds
+        <= 0.0
+    ):
+        return None
+
+    return (
+        self.prompt_tokens
+        / self.prompt_eval_duration_seconds
+    )
+
+
+@property
+def generation_tokens_per_second(
+    self,
+) -> float | None:
+
+    if (
+        self.completion_tokens is None
+        or self.eval_duration_seconds
+        is None
+        or self.eval_duration_seconds
+        <= 0.0
+    ):
+        return None
+
+    return (
+        self.completion_tokens
+        / self.eval_duration_seconds
+    )

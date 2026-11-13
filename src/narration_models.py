@@ -428,6 +428,9 @@ class NarrationResponse:
 
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
+    load_duration_seconds: float | None = None
+    prompt_eval_duration_seconds: float | None = None
+    eval_duration_seconds: float | None = None
     generation_duration_seconds: (
         float | None
     ) = None
@@ -501,6 +504,15 @@ class NarrationResponse:
             ),
             "generation_duration_seconds": (
                 self.generation_duration_seconds
+            ),
+            "load_duration_seconds": (
+                self.load_duration_seconds
+            ),
+            "prompt_eval_duration_seconds": (
+                self.prompt_eval_duration_seconds
+            ),
+            "eval_duration_seconds": (
+                self.eval_duration_seconds
             ),
         }
 

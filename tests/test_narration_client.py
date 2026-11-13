@@ -183,7 +183,7 @@ def test_request_payload_is_bounded() -> None:
     )
 
     assert options["num_predict"] == (
-        900
+        350
     )
 
     assert options["seed"] == 42

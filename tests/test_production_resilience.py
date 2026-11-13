@@ -18,7 +18,9 @@ from src.production_pipeline import (
     ProductionPipelineConfig,
     ReqTraceProductionPipeline,
 )
-
+from src.identifier_integrity import (
+    ExplicitIdentifierNotFound,
+)
 
 BASE_DIR = (
     Path(__file__)
@@ -161,3 +163,53 @@ def test_traceability_remains_protected() -> None:
     assert "REQ-042" not in (
         result.requirement_ids
     )
+
+def test_unknown_observation_is_not_substituted() -> None:
+
+    with pytest.raises(
+        ExplicitIdentifierNotFound
+    ) as error:
+
+        make_deterministic_pipeline().run(
+            "OBS-999"
+        )
+
+    assert error.value.missing_ids == (
+        "OBS-999",
+    )
+
+
+def test_unknown_requirement_is_not_substituted() -> None:
+
+    with pytest.raises(
+        ExplicitIdentifierNotFound
+    ):
+
+        make_deterministic_pipeline().run(
+            "REQ-999"
+        )
+
+
+def test_unknown_test_case_is_not_substituted() -> None:
+
+    with pytest.raises(
+        ExplicitIdentifierNotFound
+    ):
+
+        make_deterministic_pipeline().run(
+            "TC-999"
+        )
+
+
+def test_unknown_closure_query_is_not_substituted() -> None:
+
+    with pytest.raises(
+        ExplicitIdentifierNotFound
+    ):
+
+        make_deterministic_pipeline().run(
+            (
+                "What is the closure status "
+                "of OBS-999?"
+            )
+        )
