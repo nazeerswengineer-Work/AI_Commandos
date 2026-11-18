@@ -554,3 +554,4 @@ def test_strict_mode_raises() -> None:
             citations=citations,
             strict=True,
         )
+

@@ -433,3 +433,111 @@ def test_collection_lookup() -> None:
     )
 
     assert evidence_lookup == citation
+
+def test_dynamic_markdown_frd_does_not_require_page() -> None:
+    """
+    Markdown FRD evidence has no physical PDF page.
+
+    Citation generation must use real file/line provenance
+    instead of fabricating page_number.
+    """
+
+    evidence = RetrievedEvidence(
+        evidence_id="DYN::REQ-900",
+        document_type="frd",
+        content=(
+            "REQ-900 requires null-input rejection."
+        ),
+        metadata={
+            "document_name": (
+                "FRD_REQ-900.md"
+            ),
+            "relative_path": (
+                "dynamic_test/FRD_REQ-900.md"
+            ),
+            "source_extension": ".md",
+            "requirement_id": "REQ-900",
+            "test_case_id": "TC-900",
+            "line_number_start": 1,
+            "line_number_end": 6,
+            "dynamic_ingestion": True,
+        },
+        retrieval_method="exact_id",
+        score=1.0,
+        rank=1,
+    )
+
+    citation = build_evidence_citation(
+        evidence,
+        citation_rank=1,
+    )
+
+    assert (
+        citation.source_type
+        == CitationSourceType.DOCUMENT
+    )
+
+    assert (
+        citation.requirement_id
+        == "REQ-900"
+    )
+
+    assert (
+        citation.document_name
+        == "FRD_REQ-900.md"
+    )
+
+    assert (
+        citation.page_number
+        is None
+    )
+
+    assert (
+        citation.source_extension
+        == ".md"
+    )
+
+    assert (
+        citation.start_line
+        == 1
+    )
+
+    assert (
+        citation.end_line
+        == 6
+    )
+
+    assert (
+        "FRD_REQ-900.md"
+        in citation.display_label
+    )
+
+    assert (
+        "lines 1-6"
+        in citation.provenance_location
+    )
+
+def test_pdf_frd_still_requires_page_number() -> None:
+
+    evidence = RetrievedEvidence(
+        evidence_id="FRD::BROKEN",
+        document_type="frd",
+        content="REQ-999 synthetic fixture.",
+        metadata={
+            "document_name": "Broken_FRD.pdf",
+            "source_extension": ".pdf",
+            "requirement_id": "REQ-999",
+        },
+        retrieval_method="exact_id",
+        score=1.0,
+        rank=1,
+    )
+
+    with pytest.raises(
+        CitationValidationError
+    ):
+        build_evidence_citation(
+            evidence,
+            citation_rank=1,
+        )
+

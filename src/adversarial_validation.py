@@ -757,50 +757,249 @@ def validate_prohibition_preservation(
 
 def validate_test_claim_provenance(
     package: EngineeringAnswerPackage,
-    checks: list[AdversarialCheck],
-    issues: list[AdversarialIssue],
+    checks: list[
+        AdversarialCheck
+    ],
+    issues: list[
+        AdversarialIssue
+    ],
 ) -> None:
-    """AV-006: Test claims require actual Test citations."""
+    """
+    AV-006: Actual test-result claims require actual Test provenance.
+
+    A referenced Test Case ID is not automatically an executed
+    test-result claim.
+
+    Rules that make actual test-result claims:
+
+        AR-004_TEST_NOT_EXECUTED
+        AR-007_TECHNICAL_CONTRADICTION
+        AR-008_EXECUTED_FAIL_SUPPORT
+
+    Rules such as AR-005_TEST_EVIDENCE_MISSING may legitimately
+    mention a referenced Test Case ID while explicitly reporting that
+    actual Test evidence is unavailable.
+    """
+
+    test_result_rules = {
+        AssessmentRule
+        .TEST_NOT_EXECUTED,
+
+        AssessmentRule
+        .TECHNICAL_CONTRADICTION,
+
+        AssessmentRule
+        .EXECUTED_FAIL_SUPPORT,
+    }
+
+    raw_assessment_rule = (
+        package.decision
+        .assessment_rule
+    )
+
+    # Production answer packages normally store the assessment rule
+    # as its string value. This conversion also supports a direct enum
+    # value in unit-test fixtures.
+    if isinstance(
+        raw_assessment_rule,
+        AssessmentRule,
+    ):
+        applied_rule = (
+            raw_assessment_rule
+        )
+
+    else:
+        try:
+            applied_rule = (
+                AssessmentRule(
+                    str(
+                        raw_assessment_rule
+                    )
+                )
+            )
+
+        except ValueError:
+            applied_rule = None
+
+    # ---------------------------------------------------------
+    # No actual PASS / FAIL / NOT EXECUTED claim is being made.
+    #
+    # Test-category claims may describe:
+    #
+    # - expected verification;
+    # - a referenced Test Case ID;
+    # - missing Test evidence;
+    # - a verification blocker.
+    #
+    # These claims do not require a Test-section citation with a
+    # source-reported result status.
+    # ---------------------------------------------------------
+
+    if (
+        applied_rule
+        not in test_result_rules
+    ):
+        add_check(
+            checks,
+            issues,
+            rule=(
+                AdversarialRule
+                .TEST_CLAIM_PROVENANCE
+            ),
+            passed=True,
+            success_message=(
+                "The applied assessment rule does not "
+                "make an actual test-result claim. "
+                "Referenced or missing Test evidence "
+                "remains traceability and blocker information."
+            ),
+            failure_message="",
+        )
+
+        return
+
+    # ---------------------------------------------------------
+    # An actual test-result-dependent rule is active.
+    #
+    # Actual Test provenance and a result status remain mandatory.
+    # ---------------------------------------------------------
+
+    test_section = package.section(
+        "test"
+    )
 
     citation_index = {
         citation.citation_id: citation
-        for citation
-        in package.section(
-            "test"
-        ).excerpts
-    } if package.section("test") else {}
+        for citation in (
+            test_section.excerpts
+            if test_section
+            else ()
+        )
+    }
+
+    expected_statuses: set[str]
+
+    if (
+        applied_rule
+        == AssessmentRule
+        .TEST_NOT_EXECUTED
+    ):
+        expected_statuses = {
+            "NOT EXECUTED",
+            "NOT RUN",
+        }
+
+    elif (
+        applied_rule
+        == AssessmentRule
+        .TECHNICAL_CONTRADICTION
+    ):
+        expected_statuses = {
+            "PASS",
+            "PASSED",
+        }
+
+    elif (
+        applied_rule
+        == AssessmentRule
+        .EXECUTED_FAIL_SUPPORT
+    ):
+        expected_statuses = {
+            "FAIL",
+            "FAILED",
+        }
+
+    else:
+        expected_statuses = set()
 
     invalid_claims: list[str] = []
 
-    for claim in package.allowed_claims:
-        if claim.category != ClaimCategory.TEST:
+    invalid_citation_ids: list[
+        str
+    ] = []
+
+    for claim in (
+        package.allowed_claims
+    ):
+        if (
+            claim.category
+            != ClaimCategory.TEST
+        ):
             continue
 
         if not claim.citation_ids:
             invalid_claims.append(
                 claim.claim_id
             )
+
             continue
 
-        for citation_id in claim.citation_ids:
-            excerpt = citation_index.get(
-                citation_id
+        claim_valid = True
+
+        for citation_id in (
+            claim.citation_ids
+        ):
+            excerpt = (
+                citation_index.get(
+                    citation_id
+                )
             )
 
             if excerpt is None:
-                invalid_claims.append(
-                    claim.claim_id
+                claim_valid = False
+
+                invalid_citation_ids.append(
+                    citation_id
                 )
+
                 break
 
             if not excerpt.result_status:
-                invalid_claims.append(
-                    claim.claim_id
+                claim_valid = False
+
+                invalid_citation_ids.append(
+                    citation_id
                 )
+
                 break
 
-    failed_ids = ordered_unique(
-        invalid_claims
+            normalized_status = " ".join(
+                str(
+                    excerpt.result_status
+                )
+                .strip()
+                .upper()
+                .split()
+            )
+
+            if (
+                expected_statuses
+                and normalized_status
+                not in expected_statuses
+            ):
+                claim_valid = False
+
+                invalid_citation_ids.append(
+                    citation_id
+                )
+
+                break
+
+        if not claim_valid:
+            invalid_claims.append(
+                claim.claim_id
+            )
+
+    failed_claim_ids = (
+        ordered_unique(
+            invalid_claims
+        )
+    )
+
+    failed_citation_ids = (
+        ordered_unique(
+            invalid_citation_ids
+        )
     )
 
     add_check(
@@ -810,16 +1009,26 @@ def validate_test_claim_provenance(
             AdversarialRule
             .TEST_CLAIM_PROVENANCE
         ),
-        passed=not failed_ids,
+        passed=not failed_claim_ids,
         success_message=(
-            "Every Test claim uses actual Test evidence "
-            "with source-reported result status."
+            "Every actual Test-result claim uses "
+            "Test evidence with a source-reported "
+            "result status consistent with the "
+            "deterministic assessment rule."
         ),
         failure_message=(
-            "Test claims lack valid Test provenance: "
-            + ", ".join(failed_ids)
+            "Test-result claims lack valid "
+            "Test provenance: "
+            + ", ".join(
+                failed_claim_ids
+            )
         ),
-        claim_ids=failed_ids,
+        claim_ids=(
+            failed_claim_ids
+        ),
+        citation_ids=(
+            failed_citation_ids
+        ),
     )
 
 

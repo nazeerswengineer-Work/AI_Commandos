@@ -1,20 +1,67 @@
 """
-REQTRACE AI Streamlit application.
-
-Production UI for:
+REQTRACE AI Streamlit production application.
 
 REQTRACE AI:
 Evidence-Grounded RAG Assistant for Engineering Requirement
-Traceability and Observation Analysis
+Traceability and Observation Analysis.
 
-The application consumes only the unified production pipeline.
+Production capabilities:
 
-The UI never exposes raw unvalidated LLM output.
+- Unified deterministic engineering pipeline
+- Explicit engineering-identifier integrity
+- Automatic closure-intent detection
+- Optional validated Ollama narration
+- Deterministic safety fallback
+- Evidence Matrix
+- Decision Trace
+- Provenance Inspector
+- Safety Inspector
+- System Health
+- Request timing
+- Phase 16H dynamic document synchronization
+
+Dynamic document flow:
+
+    documents/
+        |
+        v
+    Detect NEW / CHANGED / DELETED
+        |
+        v
+    Parse and extract metadata
+        |
+        v
+    Intelligent chunking
+        |
+        v
+    Existing nomic-embed-text embedding model
+        |
+        v
+    Existing persistent ChromaDB collections
+        |
+        v
+    Vector verification
+        |
+        v
+    Manifest version 1.1 update
+        |
+        v
+    Immediately available for retrieval
+
+Important safety rules:
+
+- The UI never exposes raw unvalidated LLM output.
+- LLM narration does not calculate assessment.
+- LLM narration does not calculate confidence.
+- LLM narration does not determine closure readiness.
+- Explicit IDs cannot be replaced by semantically similar entities.
+- Manifest state is updated only after vector verification.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import streamlit as st
 
@@ -23,6 +70,14 @@ from config import get_settings
 from src.health import (
     HealthStatus,
     evaluate_system_health,
+)
+
+from src.identifier_integrity import (
+    ExplicitIdentifierNotFound,
+)
+
+from src.ingestion_lock import (
+    IngestionLockError,
 )
 
 from src.narration_models import (
@@ -35,8 +90,11 @@ from src.production_pipeline import (
     ReqTraceProductionPipeline,
     detect_closure_intent,
 )
-from src.identifier_integrity import (
-    ExplicitIdentifierNotFound,
+
+from src.streamlit_ingestion import (
+    DocumentIndexStatus,
+    inspect_document_index,
+    synchronize_document_index,
 )
 
 
@@ -73,18 +131,19 @@ st.markdown(
 
     .block-container {
         max-width: 1450px;
-        padding-top: 2rem;
+        padding-top: 1.8rem;
         padding-bottom: 3rem;
     }
 
     .reqtrace-title {
-        font-size: 2.3rem;
-        font-weight: 750;
+        font-size: 2.35rem;
+        font-weight: 760;
         margin-bottom: 0.15rem;
+        color: #123b66;
     }
 
     .reqtrace-subtitle {
-        color: #6b7280;
+        color: #607181;
         margin-bottom: 1.5rem;
         font-size: 1rem;
     }
@@ -111,6 +170,26 @@ st.markdown(
         margin-top: 0.4rem;
     }
 
+    .index-card {
+        border: 1px solid rgba(14,138,146,0.27);
+        border-radius: 11px;
+        padding: 0.8rem;
+        background: rgba(14,138,146,0.035);
+        margin-bottom: 0.8rem;
+    }
+
+    .index-title {
+        color: #0b5a78;
+        font-size: 0.86rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+    }
+
+    .index-detail {
+        color: #536878;
+        font-size: 0.80rem;
+    }
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -118,7 +197,7 @@ st.markdown(
 
 
 # =====================================================================
-# Pipeline
+# Production pipeline
 # =====================================================================
 
 @st.cache_resource
@@ -126,7 +205,14 @@ def create_pipeline(
     narration_enabled: bool,
     allow_repair: bool,
 ) -> ReqTraceProductionPipeline:
-    """Create the unified production pipeline."""
+    """
+    Create the unified production pipeline.
+
+    Streamlit caches a separate resource for each combination of:
+
+    - narration enabled/disabled;
+    - narration repair enabled/disabled.
+    """
 
     settings = get_settings()
 
@@ -134,16 +220,29 @@ def create_pipeline(
         narration_enabled=(
             narration_enabled
         ),
+
         allow_repair_attempt=(
             allow_repair
         ),
-        narration_model="llama3.2:1b",
+
+        narration_model=(
+            "llama3.2:1b"
+        ),
+
         context_window=4096,
+
         maximum_output_tokens=350,
+
+        keep_alive="15m",
+
         temperature=0.1,
+
         top_p=0.8,
+
         top_k=20,
+
         repeat_penalty=1.1,
+
         seed=42,
     )
 
@@ -155,7 +254,7 @@ def create_pipeline(
 
 
 # =====================================================================
-# Health
+# Operational health
 # =====================================================================
 
 @st.cache_data(
@@ -163,7 +262,7 @@ def create_pipeline(
     show_spinner=False,
 )
 def get_system_health():
-    """Return cached operational health."""
+    """Return cached operational system health."""
 
     return evaluate_system_health(
         settings=get_settings(),
@@ -171,9 +270,61 @@ def get_system_health():
         model_name="llama3.2:1b",
 
         # Avoid expensive deterministic smoke tests
-        # during normal Streamlit reruns.
+        # during ordinary Streamlit reruns.
         include_deterministic_smoke_test=False,
     )
+
+
+# =====================================================================
+# Document-index status
+# =====================================================================
+
+@st.cache_data(
+    ttl=30,
+    show_spinner=False,
+)
+def get_document_index_status() -> DocumentIndexStatus:
+    """
+    Return current filesystem-to-index synchronization status.
+
+    This operation:
+
+    - scans the documents directory;
+    - calculates complete-file hashes;
+    - compares hashes with manifest version 1.1;
+    - does not invoke Ollama;
+    - does not modify ChromaDB;
+    - does not modify the manifest.
+    """
+
+    return inspect_document_index(
+        BASE_DIRECTORY
+    )
+
+
+def pending_document_changes(
+    status: DocumentIndexStatus,
+) -> int:
+    """Return number of pending index changes."""
+
+    return int(
+        status.new
+        + status.changed
+        + status.deleted
+    )
+
+
+def clear_runtime_caches() -> None:
+    """
+    Clear application caches after document synchronization.
+
+    Production resources are recreated on the next request so the
+    application does not retain stale retrieval state.
+    """
+
+    get_document_index_status.clear()
+    get_system_health.clear()
+    create_pipeline.clear()
 
 
 # =====================================================================
@@ -183,6 +334,7 @@ def get_system_health():
 def status_color(
     value: str,
 ) -> str:
+    """Return UI color for engineering status."""
 
     normalized = (
         value
@@ -194,16 +346,26 @@ def status_color(
         "SUPPORTED",
         "HIGH",
         "CLOSURE ESTABLISHED",
+        "READY",
+        "INDEXED",
+        "SYNCHRONIZED",
     }:
         return "#107C10"
 
-    if normalized == "NOT SUPPORTED":
+    if normalized in {
+        "NOT SUPPORTED",
+        "FAILED",
+        "NOT FOUND",
+    }:
         return "#D13438"
 
     if normalized in {
         "INCONCLUSIVE",
         "MEDIUM",
         "CLOSURE NOT ESTABLISHED",
+        "DEGRADED",
+        "CHANGED",
+        "NEW",
     }:
         return "#CA5010"
 
@@ -217,14 +379,11 @@ def render_status_card(
     title: str,
     value: str,
 ) -> None:
-    """Render a compact engineering decision card."""
+    """Render one engineering status card."""
 
     color = status_color(
         value
     )
-
-    # Keep HTML on one logical line to prevent
-    # Streamlit treating indented HTML as code.
 
     html = (
         '<div class="status-card">'
@@ -246,6 +405,7 @@ def render_identifier_group(
     title: str,
     values: tuple[str, ...],
 ) -> None:
+    """Render one engineering-ID group."""
 
     st.markdown(
         f"**{title}**"
@@ -269,6 +429,7 @@ def render_identifier_group(
 def evidence_type_label(
     document_type: str,
 ) -> str:
+    """Return user-facing evidence type."""
 
     labels = {
         "frd": "Requirement",
@@ -276,6 +437,7 @@ def evidence_type_label(
         "code": "Source Code",
         "test": "Test",
         "review": "Review",
+        "other": "Other",
     }
 
     return labels.get(
@@ -287,6 +449,7 @@ def evidence_type_label(
 def evidence_type_icon(
     document_type: str,
 ) -> str:
+    """Return icon for an evidence type."""
 
     icons = {
         "frd": "📘",
@@ -294,6 +457,7 @@ def evidence_type_icon(
         "code": "💻",
         "test": "🧪",
         "review": "🔍",
+        "other": "📄",
     }
 
     return icons.get(
@@ -303,12 +467,371 @@ def evidence_type_icon(
 
 
 # =====================================================================
-# Delivery
+# Document-index UI
+# =====================================================================
+
+def render_index_status(
+    status: DocumentIndexStatus,
+) -> None:
+    """Render current document-index state."""
+
+    pending = pending_document_changes(
+        status
+    )
+
+    st.markdown(
+        (
+            '<div class="index-card">'
+            '<div class="index-title">'
+            'Phase 16H Dynamic Index'
+            '</div>'
+            '<div class="index-detail">'
+            f'Manifest {status.manifest_version} · '
+            f'{status.indexed} indexed document(s)'
+            '</div>'
+            '</div>'
+        ),
+        unsafe_allow_html=True,
+    )
+
+    metric_column_1, metric_column_2 = (
+        st.columns(2)
+    )
+
+    with metric_column_1:
+
+        st.metric(
+            "Discovered",
+            status.discovered,
+        )
+
+        st.metric(
+            "New",
+            status.new,
+        )
+
+        st.metric(
+            "Changed",
+            status.changed,
+        )
+
+    with metric_column_2:
+
+        st.metric(
+            "Indexed",
+            status.indexed,
+        )
+
+        st.metric(
+            "Deleted",
+            status.deleted,
+        )
+
+        st.metric(
+            "Failed",
+            status.failed,
+        )
+
+    if (
+        pending == 0
+        and status.failed == 0
+    ):
+
+        st.success(
+            "Document index is synchronized.",
+            icon="✅",
+        )
+
+    elif status.failed:
+
+        st.error(
+            (
+                f"{status.failed} document inspection "
+                "failure(s) require attention."
+            ),
+            icon="❌",
+        )
+
+    else:
+
+        st.warning(
+            (
+                f"{pending} document change(s) "
+                "are waiting for synchronization."
+            ),
+            icon="⚠️",
+        )
+
+
+def render_sync_report(
+    report,
+) -> None:
+    """Render the latest document synchronization report."""
+
+    st.caption(
+        (
+            f"Discovered: {report.discovered} · "
+            f"New: {report.new} · "
+            f"Changed: {report.changed} · "
+            f"Deleted: {report.deleted}"
+        )
+    )
+
+    st.caption(
+        (
+            f"Indexed: {report.indexed} · "
+            f"Removed: {report.removed} · "
+            f"Skipped: {report.skipped} · "
+            f"Failed: {report.failed}"
+        )
+    )
+
+    for item in report.results:
+
+        label = (
+            f"{item.relative_path} "
+            f"• {item.change_type} "
+            f"• {item.status}"
+        )
+
+        if item.status in {
+            "INDEXED",
+            "REMOVED",
+        }:
+
+            st.success(
+                label,
+                icon="✅",
+            )
+
+        elif item.status == "FAILED":
+
+            st.error(
+                label,
+                icon="❌",
+            )
+
+            if item.message:
+
+                st.caption(
+                    item.message
+                )
+
+        else:
+
+            st.caption(
+                label
+            )
+
+
+def render_document_management_sidebar() -> None:
+    """Render Phase 16H document-index controls."""
+
+    st.markdown(
+        "### Document index"
+    )
+
+    index_status: (
+        DocumentIndexStatus
+        | None
+    ) = None
+
+    try:
+
+        index_status = (
+            get_document_index_status()
+        )
+
+        render_index_status(
+            index_status
+        )
+
+    except Exception as exc:
+
+        st.error(
+            "Document-index status is unavailable.",
+            icon="❌",
+        )
+
+        with st.expander(
+            "Index diagnostics"
+        ):
+
+            st.code(
+                (
+                    f"{type(exc).__name__}: "
+                    f"{exc}"
+                ),
+                language=None,
+            )
+
+    (
+        detect_column,
+        synchronize_column,
+    ) = st.columns(2)
+
+    with detect_column:
+
+        detect_requested = st.button(
+            "Detect changes",
+            use_container_width=True,
+            key="reqtrace_detect_changes",
+        )
+
+    if detect_requested:
+
+        get_document_index_status.clear()
+
+        st.rerun()
+
+    synchronization_disabled = bool(
+        index_status is None
+        or (
+            index_status.new == 0
+            and index_status.changed == 0
+            and index_status.deleted == 0
+        )
+    )
+
+    with synchronize_column:
+
+        synchronization_requested = (
+            st.button(
+                "Synchronize",
+                type="primary",
+                use_container_width=True,
+                disabled=(
+                    synchronization_disabled
+                ),
+                key=(
+                    "reqtrace_synchronize_documents"
+                ),
+            )
+        )
+
+    if synchronization_requested:
+
+        try:
+
+            with st.spinner(
+                (
+                    "Synchronizing engineering documents, "
+                    "embeddings, and persistent vector index..."
+                )
+            ):
+
+                sync_report = (
+                    synchronize_document_index(
+                        BASE_DIRECTORY,
+                        continue_on_error=True,
+                    )
+                )
+
+            st.session_state[
+                "reqtrace_last_sync_report"
+            ] = sync_report
+
+            clear_runtime_caches()
+
+            if sync_report.failed == 0:
+
+                st.success(
+                    (
+                        "Document synchronization completed. "
+                        f"Indexed: {sync_report.indexed}, "
+                        f"Removed: {sync_report.removed}."
+                    ),
+                    icon="✅",
+                )
+
+            else:
+
+                st.warning(
+                    (
+                        "Synchronization completed with "
+                        f"{sync_report.failed} failed "
+                        "document(s). Successful documents "
+                        "remain indexed."
+                    ),
+                    icon="⚠️",
+                )
+
+            st.rerun()
+
+        except IngestionLockError as exc:
+
+            st.warning(
+                (
+                    "Document synchronization is already "
+                    "running in another process."
+                ),
+                icon="⚠️",
+            )
+
+            with st.expander(
+                "Synchronization diagnostics"
+            ):
+
+                st.code(
+                    str(exc),
+                    language=None,
+                )
+
+        except Exception as exc:
+
+            st.error(
+                (
+                    "REQTRACE AI could not synchronize "
+                    "the document index."
+                ),
+                icon="❌",
+            )
+
+            with st.expander(
+                "Synchronization diagnostics"
+            ):
+
+                st.code(
+                    (
+                        f"{type(exc).__name__}: "
+                        f"{exc}"
+                    ),
+                    language=None,
+                )
+
+    last_sync_report = (
+        st.session_state.get(
+            "reqtrace_last_sync_report"
+        )
+    )
+
+    if last_sync_report is not None:
+
+        with st.expander(
+            "Last synchronization"
+        ):
+
+            render_sync_report(
+                last_sync_report
+            )
+
+    st.caption(
+        (
+            "Synchronization reuses the existing "
+            "nomic-embed-text model and persistent "
+            "REQTRACE AI Chroma collections."
+        )
+    )
+
+
+# =====================================================================
+# Narration-delivery status
 # =====================================================================
 
 def render_delivery_status(
     result: ProductionResponse,
 ) -> None:
+    """Render the safe narration delivery path."""
 
     if (
         result.delivery_status
@@ -317,7 +840,10 @@ def render_delivery_status(
     ):
 
         st.success(
-            "Validated grounded LLM narration delivered.",
+            (
+                "Validated grounded LLM narration "
+                "delivered."
+            ),
             icon="✅",
         )
 
@@ -330,14 +856,20 @@ def render_delivery_status(
     ):
 
         st.success(
-            "Validated repaired LLM narration delivered.",
+            (
+                "Validated repaired LLM narration "
+                "delivered."
+            ),
             icon="✅",
         )
 
         return
 
     st.info(
-        "Safe deterministic engineering answer delivered.",
+        (
+            "Safe deterministic engineering "
+            "answer delivered."
+        ),
         icon="ℹ️",
     )
 
@@ -355,6 +887,7 @@ def render_delivery_status(
 def render_engineering_answer_tab(
     result: ProductionResponse,
 ) -> None:
+    """Render the final safe answer."""
 
     st.markdown(
         "### Grounded engineering answer"
@@ -382,11 +915,9 @@ def render_engineering_answer_tab(
 
         if result.supporting_items:
 
-            for item in (
-                result.supporting_items
-            ):
+            for item in result.supporting_items:
 
-                st.success(
+                st.success( 
                     item,
                     icon="✅",
                 )
@@ -394,20 +925,21 @@ def render_engineering_answer_tab(
         else:
 
             st.caption(
-                "No decisive supporting item recorded."
+                (
+                    "No decisive supporting item "
+                    "was recorded."
+                )
             )
 
     with blocker_column:
 
         st.markdown(
-            "#### Blocking / missing evidence"
+            "#### Blocking or missing evidence"
         )
 
         if result.blocking_items:
 
-            for item in (
-                result.blocking_items
-            ):
+            for item in result.blocking_items:
 
                 st.warning(
                     item,
@@ -428,14 +960,17 @@ def render_engineering_answer_tab(
 def render_evidence_matrix_tab(
     result: ProductionResponse,
 ) -> None:
+    """Render validated evidence citations."""
 
     st.markdown(
         "### Evidence matrix"
     )
 
     st.caption(
-        "Validated evidence contributing to the "
-        "engineering decision."
+        (
+            "Validated evidence contributing "
+            "to the engineering decision."
+        )
     )
 
     if not result.citations:
@@ -447,12 +982,10 @@ def render_evidence_matrix_tab(
         return
 
     rows: list[
-        dict[str, str]
+        dict[str, Any]
     ] = []
 
-    for citation in (
-        result.citations
-    ):
+    for citation in result.citations:
 
         rows.append(
             {
@@ -464,6 +997,10 @@ def render_evidence_matrix_tab(
                     evidence_type_label(
                         citation.document_type
                     )
+                ),
+
+                "Source": (
+                    citation.source_label
                 ),
 
                 "Requirement": (
@@ -502,28 +1039,41 @@ def render_evidence_matrix_tab(
         "#### Evidence coverage"
     )
 
-    represented_types = { 
-        citation
-        .document_type
-        .lower()
-
-        for citation
-        in result.citations
+    represented_types = {
+        citation.document_type.lower()
+        for citation in result.citations
     }
 
-    coverage_columns = ( 
-        st.columns(5)
-    )
+    coverage_columns = st.columns(5)
 
     core_types = (
-        ("frd", "Requirement"),
-        ("observation", "Observation"),
-        ("code", "Code"),
-        ("test", "Test"),
-        ("review", "Review"),
+        (
+            "frd",
+            "Requirement",
+        ),
+
+        (
+            "observation",
+            "Observation",
+        ),
+
+        (
+            "code",
+            "Code",
+        ),
+
+        (
+            "test",
+            "Test",
+        ),
+
+        (
+            "review",
+            "Review",
+        ),
     )
 
-    for ( 
+    for (
         column,
         (
             document_type,
@@ -532,6 +1082,7 @@ def render_evidence_matrix_tab(
     ) in zip(
         coverage_columns,
         core_types,
+        strict=True,
     ):
 
         with column:
@@ -549,7 +1100,10 @@ def render_evidence_matrix_tab(
             else:
 
                 st.info(
-                    f"{label}\n\nNot in final context",
+                    (
+                        f"{label}\n\n"
+                        "Not in final context"
+                    ),
                     icon="ℹ️",
                 )
 
@@ -561,6 +1115,7 @@ def render_evidence_matrix_tab(
 def render_decision_trace_tab(
     result: ProductionResponse,
 ) -> None:
+    """Render deterministic decision progression."""
 
     st.markdown(
         "### Decision trace"
@@ -579,16 +1134,14 @@ def render_decision_trace_tab(
 
     st.success(
         (
-            f"{len(result.citations)} "
-            "validated evidence record(s) "
-            "support this production response."
+            f"{len(result.citations)} validated "
+            "evidence record(s) support this "
+            "production response."
         ),
         icon="✅",
     )
 
-    trace_columns = ( 
-        st.columns(3)
-    )
+    trace_columns = st.columns(3)
 
     with trace_columns[0]:
         render_identifier_group(
@@ -614,9 +1167,7 @@ def render_decision_trace_tab(
 
     if result.blocking_items:
 
-        for item in (
-            result.blocking_items
-        ):
+        for item in result.blocking_items:
 
             st.warning(
                 item,
@@ -626,7 +1177,10 @@ def render_decision_trace_tab(
     else:
 
         st.success(
-            "No deterministic assessment blocker identified.",
+            (
+                "No deterministic assessment "
+                "blocker was identified."
+            ),
             icon="✅",
         )
 
@@ -680,8 +1234,8 @@ def render_decision_trace_tab(
 
     st.info(
         (
-            "Observation assessment and "
-            "closure readiness are evaluated separately."
+            "Observation assessment and closure "
+            "readiness are evaluated separately."
         ),
         icon="ℹ️",
     )
@@ -694,6 +1248,7 @@ def render_decision_trace_tab(
 def render_provenance_tab(
     result: ProductionResponse,
 ) -> None:
+    """Render physical source provenance."""
 
     st.markdown(
         "### Source provenance inspector"
@@ -701,29 +1256,27 @@ def render_provenance_tab(
 
     st.caption(
         (
-            "Page numbers, filenames, functions "
-            "and physical source-line ranges originate "
-            "from validated engineering metadata."
+            "Pages, filenames, functions, sections, "
+            "and physical line ranges originate from "
+            "validated engineering metadata."
         )
     )
 
     if not result.citations:
 
         st.info(
-            "No provenance records available."
+            "No provenance records are available."
         )
 
         return
 
-    for citation in ( 
-        result.citations
-    ):
+    for citation in result.citations:
 
         icon = evidence_type_icon(
             citation.document_type
         )
 
-        type_label = ( 
+        type_label = (
             evidence_type_label(
                 citation.document_type
             )
@@ -779,7 +1332,7 @@ def render_provenance_tab(
 
                     st.markdown(
                         "**REQ**"
-                )
+                    )
 
                     st.code(
                         citation.requirement_id,
@@ -834,6 +1387,15 @@ def render_provenance_tab(
                             icon="❌",
                         )
 
+                    elif status == (
+                        "NOT EXECUTED"
+                    ):
+
+                        st.warning(
+                            "NOT EXECUTED",
+                            icon="⚠️",
+                        )
+
                     else:
 
                         st.warning(
@@ -849,9 +1411,10 @@ def render_provenance_tab(
 def render_safety_tab(
     result: ProductionResponse,
 ) -> None:
+    """Render grounding and delivery safety information."""
 
     st.markdown(
-        "### Safety & delivery inspector"
+        "### Safety and delivery inspector"
     )
 
     st.markdown(
@@ -912,7 +1475,7 @@ def render_safety_tab(
         ),
     }
 
-    ( 
+    (
         delivery_title,
         delivery_explanation,
     ) = delivery_map[
@@ -927,9 +1490,7 @@ def render_safety_tab(
         icon="ℹ️",
     )
 
-    metric_1, metric_2 = (
-        st.columns(2)
-    )
+    metric_1, metric_2 = st.columns(2)
 
     with metric_1:
 
@@ -973,7 +1534,7 @@ def render_safety_tab(
             "**Narration model**"
         )
 
-        st.code(
+        st.code( 
             result.model,
             language=None,
         )
@@ -989,21 +1550,17 @@ def render_safety_tab(
             icon="⚠️",
         )
 
-    # --------------------------------------------------------------
-    # Phase 15D request timing
-    # --------------------------------------------------------------
-
     st.markdown(
         "#### Request timing"
     )
 
     (
-        timing_1,
-        timing_2,
-        timing_3,
+        timing_column_1,
+        timing_column_2,
+        timing_column_3,
     ) = st.columns(3)
 
-    with timing_1:
+    with timing_column_1:
 
         st.metric(
             "Deterministic pipeline",
@@ -1012,7 +1569,7 @@ def render_safety_tab(
             ),
         )
 
-    with timing_2:
+    with timing_column_2:
 
         st.metric(
             "Narration",
@@ -1021,7 +1578,7 @@ def render_safety_tab(
             ),
         )
 
-    with timing_3:
+    with timing_column_3:
 
         st.metric(
             "Total request",
@@ -1039,15 +1596,15 @@ def render_safety_tab(
         "LLM does not calculate confidence.",
         "LLM does not determine closure readiness.",
         "Unsupported engineering IDs are blocked.",
+        "Explicit IDs cannot be semantically substituted.",
         "Fabricated citations are blocked.",
         "Revision conflicts cannot be resolved by narration.",
         "Explicit traceability cannot be rewritten by narration.",
+        "Referenced Test IDs are not treated as executed Test evidence.",
         "Invalid narration falls back to deterministic output.",
     )
 
-    for boundary in (
-        safety_boundaries
-    ):
+    for boundary in safety_boundaries:
 
         st.markdown(
             f"- ✅ {boundary}"
@@ -1055,12 +1612,13 @@ def render_safety_tab(
 
 
 # =====================================================================
-# Complete result
+# Complete production result
 # =====================================================================
 
 def render_result(
     result: ProductionResponse,
 ) -> None:
+    """Render all production result views."""
 
     st.divider()
 
@@ -1169,40 +1727,42 @@ with st.sidebar:
         "## Analysis settings"
     )
 
-    evaluate_closure = (
-        st.toggle(
-            "Evaluate closure readiness",
-            value=False,
-            help=(
-                "Closure evaluation is also activated "
-                "automatically for closure-related queries."
-            ),
-        )
+    evaluate_closure = st.toggle(
+        "Evaluate closure readiness",
+        value=False,
+        help=(
+            "Closure evaluation is also activated "
+            "automatically for closure-related queries."
+        ),
     )
 
-    narration_enabled = (
-        st.toggle(
-            "Enable grounded LLM narration",
-            value=True,
-            help=(
-                "Only validated narration is delivered. "
-                "Failures fall back to deterministic output."
-            ),
-        )
+    narration_enabled = st.toggle(
+        "Enable grounded LLM narration",
+        value=True,
+        help=(
+            "Only validated narration is delivered. "
+            "Failures fall back to deterministic output."
+        ),
     )
 
-    allow_repair = (
-        st.toggle(
-            "Allow one narration repair",
-            value=True,
-            disabled=(
-                not narration_enabled
-            ),
-        )
+    allow_repair = st.toggle(
+        "Allow one narration repair",
+        value=True,
+        disabled=(
+            not narration_enabled
+        ),
     )
+
+    st.divider()
 
     # --------------------------------------------------------------
-    # Phase 15D health
+    # Phase 16H.5 dynamic document synchronization
+    # --------------------------------------------------------------
+
+    render_document_management_sidebar()
+
+    # --------------------------------------------------------------
+    # Phase 15D operational system health
     # --------------------------------------------------------------
 
     st.divider()
@@ -1214,78 +1774,100 @@ with st.sidebar:
     if st.button(
         "Refresh health",
         use_container_width=True,
+        key="reqtrace_refresh_health",
     ):
 
         get_system_health.clear()
 
-    health = get_system_health()
+        st.rerun()
 
-    if (
-        health.status
-        == HealthStatus.READY
-    ):
+    try:
 
-        st.success(
-            "System ready",
-            icon="✅",
-        )
+        health = get_system_health()
 
-    elif (
-        health.status
-        == HealthStatus.DEGRADED
-    ):
+        if (
+            health.status
+            == HealthStatus.READY
+        ):
 
-        st.warning(
-            "System operating in degraded mode",
-            icon="⚠️",
-        )
+            st.success(
+                "System ready",
+                icon="✅",
+            )
 
-    else:
+        elif (
+            health.status
+            == HealthStatus.DEGRADED
+        ):
+
+            st.warning(
+                "System operating in degraded mode",
+                icon="⚠️",
+            )
+
+        else:
+
+            st.error(
+                "Core system unavailable",
+                icon="❌",
+            )
+
+        with st.expander(
+            "Health details"
+        ):
+
+            for check in health.checks:
+
+                message = (
+                    f"{check.component}: "
+                    f"{check.message}"
+                )
+
+                if (
+                    check.status
+                    == HealthStatus.READY
+                ):
+
+                    st.success(
+                        message,
+                        icon="✅",
+                    )
+
+                elif (
+                    check.status
+                    == HealthStatus.DEGRADED
+                ):
+
+                    st.warning(
+                        message,
+                        icon="⚠️",
+                    )
+
+                else:
+
+                    st.error(
+                        message,
+                        icon="❌",
+                    )
+
+    except Exception as exc:
 
         st.error(
-            "Core system unavailable",
+            "System health is unavailable.",
             icon="❌",
         )
 
-    with st.expander(
-        "Health details"
-    ):
-
-        for check in (
-            health.checks
+        with st.expander(
+            "Health diagnostics"
         ):
 
-            message = (
-                f"{check.component}: "
-                f"{check.message}"
+            st.code(
+                (
+                    f"{type(exc).__name__}: "
+                    f"{exc}"
+                ),
+                language=None,
             )
-
-            if (
-                check.status
-                == HealthStatus.READY
-            ):
-
-                st.success(
-                    message,
-                    icon="✅",
-                )
-
-            elif (
-                check.status
-                == HealthStatus.DEGRADED
-            ):
-
-                st.warning(
-                    message,
-                    icon="⚠️",
-                )
-
-            else:
-
-                st.error(
-                    message,
-                    icon="❌",
-                )
 
     st.divider()
 
@@ -1302,6 +1884,7 @@ with st.sidebar:
                 "OBS-052",
                 "REQ-050",
                 "OBS-070",
+                "REQ-900",
             ]
         ),
         language=None,
@@ -1317,7 +1900,7 @@ with st.sidebar:
                 "Is OBS-070 open or closed?",
                 "What is the closure status of OBS-070?",
                 "Can OBS-070 be closed?",
-                "Is OBS-070 ready for closure?",
+                "What does REQ-900 specify?",
             ]
         ),
         language=None,
@@ -1330,13 +1913,13 @@ with st.sidebar:
             "REQTRACE AI provides evidence-derived "
             "engineering decision support. Final "
             "engineering and closure authority remain "
-            "with the responsible human authority."
+            "with responsible human personnel."
         )
     )
 
 
 # =====================================================================
-# Query
+# Query form
 # =====================================================================
 
 with st.form(
@@ -1347,34 +1930,33 @@ with st.form(
     query = st.text_input(
         "Engineering query",
         placeholder=(
-            "Example: OBS-023, REQ-050, "
+            "Example: OBS-023, REQ-900, "
             "Is OBS-070 open or closed?"
         ),
     )
 
-    submitted = (
-        st.form_submit_button(
-            "Analyze evidence",
-            type="primary",
-            use_container_width=True,
-        )
+    submitted = st.form_submit_button(
+        "Analyze evidence",
+        type="primary",
+        use_container_width=True,
     )
 
 
 # =====================================================================
-# Execute
+# Execute production query
 # =====================================================================
 
 if submitted:
 
-    clean_query = (
-        query.strip()
-    )
+    clean_query = query.strip()
 
     if not clean_query:
 
         st.warning(
-            "Enter an engineering query before running analysis.",
+            (
+                "Enter an engineering query "
+                "before running analysis."
+            ),
             icon="⚠️",
         )
 
@@ -1411,7 +1993,10 @@ if submitted:
         )
 
         with st.spinner(
-            "Running grounded engineering analysis..."
+            (
+                "Running grounded engineering "
+                "analysis..."
+            )
         ):
 
             result = pipeline.run(
@@ -1427,7 +2012,7 @@ if submitted:
 
         st.session_state[
             "reqtrace_last_query"
-            ] = clean_query
+        ] = clean_query
 
         st.session_state[
             "reqtrace_closure_auto_detected"
@@ -1448,9 +2033,7 @@ if submitted:
             "**Missing identifier(s)**"
         )
 
-        for identifier in (
-            exc.missing_ids
-        ):
+        for identifier in exc.missing_ids:
 
             st.code(
                 identifier,
@@ -1460,7 +2043,8 @@ if submitted:
         st.info(
             (
                 "REQTRACE AI did not substitute another "
-                "requirement, observation, or test case."
+                "requirement, observation, or test case. "
+                "LLM narration was not invoked."
             ),
             icon="ℹ️",
         )
@@ -1504,13 +2088,11 @@ if submitted:
 
 
 # =====================================================================
-# Display result
+# Display latest result
 # =====================================================================
 
-result = (
-    st.session_state.get(
-        "reqtrace_last_result"
-    )
+result = st.session_state.get(
+    "reqtrace_last_result"
 )
 
 if result is not None:
@@ -1535,9 +2117,9 @@ if result is not None:
 
         st.info(
             (
-                "Closure intent was detected automatically. "
-                "Closure-readiness evaluation was enabled "
-                "for this query."
+                "Closure intent was detected "
+                "automatically. Closure-readiness "
+                "evaluation was enabled for this query."
             ),
             icon="ℹ️",
         )

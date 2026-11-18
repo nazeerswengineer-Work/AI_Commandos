@@ -353,6 +353,13 @@ class OllamaEmbeddingClient:
                 else None
             ),
         )
+    @property
+    def model(
+        self,
+    ) -> str:
+        """Return the configured embedding model."""
+
+        return self.config.model
 
 
 def batched(

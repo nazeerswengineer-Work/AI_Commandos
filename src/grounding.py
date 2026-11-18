@@ -613,10 +613,84 @@ def validate_test_result_grounding(
     issues: list[GroundingIssue],
 ) -> None:
     """
-    GR-005: Test-result claims require actual Test citations.
+    GR-005: Actual test-result claims require actual Test citations.
 
-    A test-case ID on an Observation or Code citation is not enough.
+    Important distinction:
+
+        Referenced Test Case ID
+            !=
+        Actual Test evidence
+
+    Examples:
+
+        FRD says:
+            Verification shall be performed by TC-900.
+
+        This establishes a verification reference only. It does not
+        establish that TC-900 was executed or has a result.
+
+    Actual Test evidence is mandatory only when the applied
+    deterministic rule makes a test-result claim:
+
+        AR-004
+            Test exists but was NOT EXECUTED.
+
+        AR-007
+            Technical contradiction supported by executed PASS.
+
+        AR-008
+            Observation supported by executed FAIL.
+
+    AR-005 explicitly means actual Test evidence is missing, so it
+    must not fail grounding merely because a referenced TC ID has no
+    Test citation.
     """
+
+    test_result_rules = {
+        AssessmentRule.TEST_NOT_EXECUTED,
+        AssessmentRule.TECHNICAL_CONTRADICTION,
+        AssessmentRule.EXECUTED_FAIL_SUPPORT,
+    }
+
+    applied_rule = (
+        decision.assessment
+        .applied_rule
+    )
+
+    # ---------------------------------------------------------
+    # No actual test-result claim is made.
+    #
+    # Referenced TC IDs remain in the deterministic engineering-ID
+    # set for traceability, but actual Test evidence is not required.
+    # ---------------------------------------------------------
+
+    if applied_rule not in test_result_rules:
+
+        add_check(
+            checks,
+            issues,
+            rule=(
+                GroundingRule
+                .TEST_RESULT_GROUNDING
+            ),
+            passed=True,
+            success_message=(
+                "The applied assessment rule does not make "
+                "an actual test-result claim. Referenced "
+                "Test Case IDs are retained as traceability "
+                "metadata only."
+            ),
+            failure_message="",
+        )
+
+        return
+
+    # ---------------------------------------------------------
+    # The decision makes an actual test-result claim.
+    #
+    # Only citations whose document_type is 'test' may satisfy
+    # this rule.
+    # ---------------------------------------------------------
 
     expected_test_ids = (
         decision.assessment
@@ -631,10 +705,56 @@ def validate_test_result_grounding(
     )
 
     missing: list[str] = []
+
     missing_status: list[str] = []
+
+    incorrect_status: list[str] = []
+
     matched_ids: list[str] = []
 
-    for test_case_id in expected_test_ids:
+    expected_statuses: set[str]
+
+    if (
+        applied_rule
+        == AssessmentRule
+        .TEST_NOT_EXECUTED
+    ):
+
+        expected_statuses = {
+            "NOT EXECUTED",
+            "NOT RUN",
+        }
+
+    elif (
+        applied_rule
+        == AssessmentRule
+        .TECHNICAL_CONTRADICTION
+    ):
+
+        expected_statuses = {
+            "PASS",
+            "PASSED",
+        }
+
+    elif (
+        applied_rule
+        == AssessmentRule
+        .EXECUTED_FAIL_SUPPORT
+    ):
+
+        expected_statuses = {
+            "FAIL",
+            "FAILED",
+        }
+
+    else:
+
+        expected_statuses = set()
+
+    for test_case_id in (
+        expected_test_ids
+    ):
+
         matches = tuple(
             citation
             for citation
@@ -646,42 +766,87 @@ def validate_test_result_grounding(
         )
 
         if not matches:
+
             missing.append(
                 test_case_id
             )
+
             continue
 
         matched_ids.extend(
             citation.citation_id
-            for citation in matches
+            for citation
+            in matches
         )
 
-        if not any(
-            citation.result_status
-            for citation in matches
-        ):
+        statuses = {
+            " ".join(
+                str(
+                    citation.result_status
+                )
+                .strip()
+                .upper()
+                .split()
+            )
+            for citation
+            in matches
+            if citation.result_status
+        }
+
+        if not statuses:
+
             missing_status.append(
+                test_case_id
+            )
+
+            continue
+
+        if (
+            expected_statuses
+            and statuses.isdisjoint(
+                expected_statuses
+            )
+        ):
+
+            incorrect_status.append(
                 test_case_id
             )
 
     passed = bool(
         not missing
         and not missing_status
+        and not incorrect_status
     )
 
     failure_parts: list[str] = []
 
     if missing:
+
         failure_parts.append(
-            "No actual test citation for: "
-            + ", ".join(missing)
+            "No actual Test citation for: "
+            + ", ".join(
+                missing
+            )
         )
 
     if missing_status:
+
         failure_parts.append(
             "Test citation lacks result status for: "
             + ", ".join(
                 missing_status
+            )
+        )
+
+    if incorrect_status:
+
+        failure_parts.append(
+            (
+                "Actual Test citation result does not "
+                "support the applied assessment rule for: "
+            )
+            + ", ".join(
+                incorrect_status
             )
         )
 
@@ -694,25 +859,33 @@ def validate_test_result_grounding(
         ),
         passed=passed,
         success_message=(
-            "Every deterministic test claim is supported "
-            "by actual Test evidence with result status."
+            "Every deterministic test-result claim is "
+            "supported by actual Test evidence with the "
+            "required source-reported result status."
         ),
         failure_message=(
-            "; ".join(failure_parts)
+            "; ".join(
+                failure_parts
+            )
             if failure_parts
             else (
-                "Test-result grounding validation failed."
+                "Test-result grounding "
+                "validation failed."
             )
         ),
-        citation_ids=ordered_unique(
-            matched_ids
+        citation_ids=(
+            ordered_unique(
+                matched_ids
+            )
         ),
-        engineering_ids=ordered_unique(
-            missing
-            + missing_status
+        engineering_ids=(
+            ordered_unique(
+                missing
+                + missing_status
+                + incorrect_status
+            )
         ),
     )
-
 
 def validate_code_grounding(
     decision: EngineeringDecisionResult,
@@ -723,12 +896,14 @@ def validate_code_grounding(
     """
     GR-006: Decisive technical assessments require code provenance.
 
-    Code citations have already been structurally validated by Phase 13A.
+    Code citations have already been structurally validated
+    by Phase 13A.
     """
 
     decisive_rules = {
         AssessmentRule
         .EXECUTED_FAIL_SUPPORT,
+
         AssessmentRule
         .TECHNICAL_CONTRADICTION,
     }
@@ -743,7 +918,12 @@ def validate_code_grounding(
         "code",
     )
 
+    # ---------------------------------------------------------
+    # Assessment rule does not make a decisive code claim.
+    # ---------------------------------------------------------
+
     if not code_required:
+
         add_check(
             checks,
             issues,
@@ -758,11 +938,18 @@ def validate_code_grounding(
             ),
             failure_message="",
         )
+
         return
+
+    # ---------------------------------------------------------
+    # Decisive assessment requires actual source-code evidence
+    # with physical line provenance.
+    # ---------------------------------------------------------
 
     valid_code_citations = tuple(
         citation
-        for citation in code_citations
+        for citation
+        in code_citations
         if (
             citation.file_name
             and citation.start_line
@@ -783,17 +970,21 @@ def validate_code_grounding(
             valid_code_citations
         ),
         success_message=(
-            "The decisive technical assessment has "
-            "source-code citations with physical line provenance."
+            "The decisive technical assessment is "
+            "supported by actual source-code evidence "
+            "with physical line provenance."
         ),
         failure_message=(
             "The decisive technical assessment lacks "
-            "source-code citation provenance."
+            "actual source-code evidence with physical "
+            "line provenance."
         ),
-        citation_ids=tuple(
-            citation.citation_id
-            for citation
-            in valid_code_citations
+        citation_ids=ordered_unique(
+            [
+                citation.citation_id
+                for citation
+                in valid_code_citations
+            ]
         ),
     )
 

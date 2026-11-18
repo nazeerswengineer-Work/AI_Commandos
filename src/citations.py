@@ -33,6 +33,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 from src.context_builder import (
@@ -56,6 +57,7 @@ class CitationSourceType(
     """Supported citation source categories."""
 
     PDF = "PDF"
+    DOCUMENT = "DOCUMENT"
     SOURCE_CODE = "SOURCE_CODE"
 
 
@@ -93,6 +95,8 @@ class EvidenceCitation:
     document_name: str | None = None
     document_revision: str | None = None
     page_number: int | None = None
+    source_extension: str | None = None
+    section_name: str | None = None
 
     file_name: str | None = None
     function_name: str | None = None
@@ -140,6 +144,11 @@ class EvidenceCitation:
             CitationSourceType.PDF
         ):
             self._validate_pdf_citation()
+
+        elif self.source_type == (
+            CitationSourceType.DOCUMENT
+        ):
+            self._validate_document_citation()
 
         elif self.source_type == (
             CitationSourceType
@@ -206,6 +215,49 @@ class EvidenceCitation:
         if self.end_line is not None:
             raise CitationValidationError(
                 "PDF citation must not contain end_line."
+            )
+
+    def _validate_document_citation(
+        self,
+    ) -> None:
+        """Validate non-PDF engineering-document provenance."""
+
+        if not self.document_name:
+            raise CitationValidationError(
+                "Document citation requires document_name."
+            )
+
+        if self.page_number is not None:
+            raise CitationValidationError(
+                "Non-PDF document citation must not contain page_number."
+            )
+
+        if (
+            self.start_line is None
+        ) != (
+            self.end_line is None
+        ):
+            raise CitationValidationError(
+                "Document line provenance requires both "
+                "start_line and end_line."
+            )
+
+        if (
+            self.start_line is not None
+            and self.start_line < 1
+        ):
+            raise CitationValidationError(
+                "Document start_line must be one-based."
+            )
+
+        if (
+            self.start_line is not None
+            and self.end_line is not None
+            and self.end_line < self.start_line
+        ):
+            raise CitationValidationError(
+                "Document end_line must be greater than "
+                "or equal to start_line."
             )
 
     def _validate_code_citation(
@@ -276,6 +328,30 @@ class EvidenceCitation:
                 f"page {self.page_number}"
             )
 
+        if self.source_type == (
+            CitationSourceType.DOCUMENT
+        ):
+            parts = [
+                str(self.document_name)
+            ]
+
+            if self.section_name:
+                parts.append(
+                    f'section "{self.section_name}"'
+                )
+
+            if (
+                self.start_line is not None
+                and self.end_line is not None
+            ):
+                parts.append(
+                    f"lines {self.start_line}-{self.end_line}"
+                )
+
+            return ", ".join(
+                parts
+            )
+
         function_part = ""
 
         if self.function_name:
@@ -317,6 +393,12 @@ class EvidenceCitation:
             ),
             "page_number": (
                 self.page_number
+            ),
+            "source_extension": (
+                self.source_extension
+            ),
+            "section_name": (
+                self.section_name
             ),
             "file_name": (
                 self.file_name
@@ -526,10 +608,45 @@ def optional_integer(
         ) from exc
 
 
+def evidence_source_extension(
+    evidence: RetrievedEvidence,
+) -> str | None:
+    """Return the physical source-file extension when available."""
+
+    metadata = dict(
+        evidence.metadata
+    )
+
+    explicit = (
+        metadata.get("source_extension")
+        or metadata.get("extension")
+    )
+
+    if explicit:
+        value = str(explicit).strip().lower()
+        return value if value.startswith(".") else "." + value
+
+    for field_name in (
+        "relative_path",
+        "document_name",
+        "file_path",
+        "source_path",
+        "file_name",
+    ):
+        raw_value = metadata.get(field_name)
+        if not raw_value:
+            continue
+        suffix = Path(str(raw_value)).suffix.lower()
+        if suffix:
+            return suffix
+
+    return None
+
+
 def citation_source_type(
     evidence: RetrievedEvidence,
 ) -> CitationSourceType:
-    """Determine citation source type from document type."""
+    """Determine citation source type from semantics and source format."""
 
     normalized_type = (
         evidence.document_type
@@ -537,18 +654,21 @@ def citation_source_type(
         .lower()
     )
 
-    if normalized_type in (
-        PDF_DOCUMENT_TYPES
-    ):
-        return CitationSourceType.PDF
+    if normalized_type in CODE_DOCUMENT_TYPES:
+        return CitationSourceType.SOURCE_CODE
 
-    if normalized_type in (
-        CODE_DOCUMENT_TYPES
-    ):
-        return (
-            CitationSourceType
-            .SOURCE_CODE
+    if normalized_type in PDF_DOCUMENT_TYPES:
+        extension = evidence_source_extension(
+            evidence
         )
+
+        if (
+            extension is None
+            or extension == ".pdf"
+        ):
+            return CitationSourceType.PDF
+
+        return CitationSourceType.DOCUMENT
 
     raise CitationValidationError(
         "Unsupported document type for citation: "
@@ -596,6 +716,55 @@ def build_pdf_display_label(
     return " | ".join(
         parts
     )
+
+
+def build_document_display_label(
+    *,
+    document_type: str,
+    document_name: str,
+    source_extension: str | None,
+    section_name: str | None,
+    start_line: int | None,
+    end_line: int | None,
+    requirement_id: str | None,
+    observation_id: str | None,
+    test_case_id: str | None,
+) -> str:
+    """Build a concise non-PDF engineering-document label."""
+
+    identifier = (
+        requirement_id
+        or observation_id
+        or test_case_id
+    )
+
+    parts = [
+        document_type.upper(),
+        document_name,
+    ]
+
+    if source_extension:
+        parts.append(
+            source_extension.lstrip(".").upper()
+        )
+
+    if section_name:
+        parts.append(
+            f'section "{section_name}"'
+        )
+
+    if (
+        start_line is not None
+        and end_line is not None
+    ):
+        parts.append(
+            f"lines {start_line}-{end_line}"
+        )
+
+    if identifier:
+        parts.append(identifier)
+
+    return " | ".join(parts)
 
 
 def build_code_display_label(
@@ -682,6 +851,15 @@ def build_evidence_citation(
         "page_number",
     )
 
+    source_extension = evidence_source_extension(
+        evidence
+    )
+
+    section_name = optional_string(
+        metadata,
+        "section_name",
+    )
+
     file_name = optional_string(
         metadata,
         "file_name",
@@ -697,10 +875,22 @@ def build_evidence_citation(
         "start_line",
     )
 
+    if start_line is None:
+        start_line = optional_integer(
+            metadata,
+            "line_number_start",
+        )
+
     end_line = optional_integer(
         metadata,
         "end_line",
     )
+
+    if end_line is None:
+        end_line = optional_integer(
+            metadata,
+            "line_number_end",
+        )
 
     language = optional_string(
         metadata,
@@ -732,9 +922,19 @@ def build_evidence_citation(
         "content_hash",
     )
 
-    source_path = optional_string(
-        metadata,
-        "file_path",
+    source_path = (
+        optional_string(
+            metadata,
+            "file_path",
+        )
+        or optional_string(
+            metadata,
+            "relative_path",
+        )
+        or optional_string(
+            metadata,
+            "source_path",
+        )
     )
 
     if source_type == CitationSourceType.PDF:
@@ -757,6 +957,24 @@ def build_evidence_citation(
             document_revision=(
                 document_revision
             ),
+            requirement_id=requirement_id,
+            observation_id=observation_id,
+            test_case_id=test_case_id,
+        )
+    elif source_type == CitationSourceType.DOCUMENT:
+        if not document_name:
+            raise CitationValidationError(
+                "Document evidence is missing document_name: "
+                f"{evidence_id}"
+            )
+
+        display_label = build_document_display_label(
+            document_type=document_type,
+            document_name=document_name,
+            source_extension=source_extension,
+            section_name=section_name,
+            start_line=start_line,
+            end_line=end_line,
             requirement_id=requirement_id,
             observation_id=observation_id,
             test_case_id=test_case_id,
@@ -798,6 +1016,8 @@ def build_evidence_citation(
             document_revision
         ),
         page_number=page_number,
+        source_extension=source_extension,
+        section_name=section_name,
         file_name=file_name,
         function_name=function_name,
         start_line=start_line,
