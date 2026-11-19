@@ -67,6 +67,9 @@ import streamlit as st
 
 from config import get_settings
 
+from src.generalized_qa_models import (
+    GeneralizedQAResponse,
+)
 from src.health import (
     HealthStatus,
     evaluate_system_health,
@@ -822,6 +825,86 @@ def render_document_management_sidebar() -> None:
             "REQTRACE AI Chroma collections."
         )
     )
+
+
+# =====================================================================
+# Generalized deterministic QA
+# =====================================================================
+
+
+def render_generalized_qa_response(
+    result: GeneralizedQAResponse,
+) -> None:
+    """Render concise deterministic inventory/evidence QA."""
+
+    st.divider()
+
+    st.markdown(
+        "### Generalized engineering QA"
+    )
+
+    st.success(
+        "Deterministic evidence result",
+        icon="✅",
+    )
+
+    metric_column_1, metric_column_2 = st.columns(2)
+
+    with metric_column_1:
+        st.metric(
+            "Query intent",
+            result.intent.value.replace("_", " "),
+        )
+
+    with metric_column_2:
+        st.metric(
+            "Matching records",
+            result.record_count,
+        )
+
+    st.markdown(
+        result.answer
+    )
+
+    if result.engineering_ids:
+        st.markdown(
+            "#### Matching engineering IDs"
+        )
+
+        identifier_text = " · ".join(
+            result.engineering_ids
+        )
+
+        st.code(
+            identifier_text,
+            language=None,
+        )
+
+    st.info(
+        result.source_statement,
+        icon="ℹ️",
+    )
+
+    with st.expander(
+        "Routing details"
+    ):
+        st.markdown(
+            f"**Intent rule:** `{result.intent_rule}`"
+        )
+
+        st.markdown(
+            f"**Response mode:** `{result.response_mode.value}`"
+        )
+
+        st.markdown(
+            "**LLM used:** No"
+        )
+
+        st.caption(
+            "Counts, filters, evidence availability, and entity IDs "
+            "are calculated deterministically from the synchronized "
+            "engineering evidence manifest."
+        )
 
 
 # =====================================================================
@@ -1901,6 +1984,9 @@ with st.sidebar:
                 "What is the closure status of OBS-070?",
                 "Can OBS-070 be closed?",
                 "What does REQ-900 specify?",
+                "How many observations are open?",
+                "List all open observations",
+                "Which requirements have missing test evidence?",
             ]
         ),
         language=None,
@@ -1931,7 +2017,7 @@ with st.form(
         "Engineering query",
         placeholder=(
             "Example: OBS-023, REQ-900, "
-            "Is OBS-070 open or closed?"
+            "How many observations are open?"
         ),
     )
 
@@ -1994,12 +2080,11 @@ if submitted:
 
         with st.spinner(
             (
-                "Running grounded engineering "
-                "analysis..."
+                "Running deterministic engineering query routing and analysis..."
             )
         ):
 
-            result = pipeline.run(
+            result = pipeline.run_routed(
                 clean_query,
                 evaluate_closure=(
                     effective_closure
@@ -2016,7 +2101,13 @@ if submitted:
 
         st.session_state[
             "reqtrace_closure_auto_detected"
-        ] = automatic_only
+        ] = bool(
+            automatic_only
+            and isinstance(
+                result,
+                ProductionResponse,
+            )
+        )
 
     except ExplicitIdentifierNotFound as exc:
 
@@ -2124,6 +2215,24 @@ if result is not None:
             icon="ℹ️",
         )
 
-    render_result(
-        result
-    )
+    if isinstance(
+        result,
+        GeneralizedQAResponse,
+    ):
+        render_generalized_qa_response(
+            result
+        )
+
+    elif isinstance(
+        result,
+        ProductionResponse,
+    ):
+        render_result(
+            result
+        )
+
+    else:
+        st.error(
+            "REQTRACE AI returned an unsupported response type.",
+            icon="❌",
+        )

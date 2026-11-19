@@ -12,7 +12,10 @@ Unvalidated model output is never returned as final narration.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+    replace,
+)
 
 from src.narration_client import (
     NarrationClientError,
@@ -34,7 +37,9 @@ from src.narration_validation import (
     NarrationValidationResult,
     validate_narration,
 )
-
+from src.narration_normalizer import (
+    normalize_narration_output,
+)
 
 @dataclass(frozen=True)
 class GroundedNarratorConfig:
@@ -200,10 +205,23 @@ class GroundedNarrator:
                 repair_validation=None,
             )
 
+        normalized_initial_response = (
+            replace(
+                initial_response,
+                text=(
+                    normalize_narration_output(
+                        initial_response.text
+                    )
+                ),
+            )
+        )
+
         initial_validation = (
             validate_narration(
                 request=prompt.request,
-                response=initial_response,
+                response=(
+                    normalized_initial_response
+                ),
             )
         )
 
@@ -214,7 +232,7 @@ class GroundedNarrator:
                     .VALIDATED_GENERATION
                 ),
                 narration=(
-                    initial_response.text
+                    normalized_initial_response.text
                 ),
                 model=(
                     initial_response.model
@@ -309,12 +327,26 @@ class GroundedNarrator:
                 repair_validation=None,
             )
 
+        normalized_repair_response = (
+            replace(
+                repair_response,
+                text=(
+                    normalize_narration_output(
+                        repair_response.text
+                    )
+                ),
+            )
+        )
+
         repair_validation = (
             validate_narration(
                 request=prompt.request,
-                response=repair_response,
+                response=(
+                    normalized_repair_response
+                ),
             )
         )
+
 
         if repair_validation.passed:
             return NarrationDelivery(
@@ -323,8 +355,9 @@ class GroundedNarrator:
                     .VALIDATED_REPAIR
                 ),
                 narration=(
-                    repair_response.text
+                    normalized_repair_response.text
                 ),
+
                 model=(
                     repair_response.model
                 ),

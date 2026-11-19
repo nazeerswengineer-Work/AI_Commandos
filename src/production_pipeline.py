@@ -55,6 +55,19 @@ from config import Settings
 from src.answer_pipeline import (
     build_grounded_answer_package,
 )
+from src.evidence_inventory import (
+    answer_inventory_query,
+    answer_requirement_evidence_availability,
+    load_inventory_summary,
+)
+from src.inventory_query_parser import (
+    parse_inventory_query,
+)
+from src.query_intent import (
+    QueryIntent,
+    QueryIntentResult,
+    classify_query_intent,
+)
 from src.grounded_narrator import (
     GroundedNarrator,
     GroundedNarratorConfig,
@@ -72,6 +85,10 @@ from src.narration_prompt import (
 )
 from src.production_metrics import (
     ProductionTiming,
+)
+from src.generalized_qa_models import (
+    GeneralizedQAResponse,
+    QAResponseMode,
 )
 
 
@@ -690,6 +707,16 @@ def deterministic_delivery(
 
 
 # =====================================================================
+# Routed production response
+# =====================================================================
+
+RoutedProductionResponse = (
+    ProductionResponse
+    | GeneralizedQAResponse
+)
+
+
+# =====================================================================
 # Unified production pipeline
 # =====================================================================
 
@@ -840,6 +867,169 @@ class ReqTraceProductionPipeline:
             return narrator.narrate(
                 prompt
             )
+
+    def _run_inventory_query(
+        self,
+        *,
+        query: str,
+        intent_result: QueryIntentResult,
+    ) -> GeneralizedQAResponse:
+        """Run deterministic COUNT, LIST, or evidence-availability QA.
+
+        Counts, filters, entity membership, and engineering IDs are
+        calculated from the current synchronized ingestion manifest.
+        The LLM is not invoked for inventory answers.
+        """
+
+        parsed = parse_inventory_query(
+            query,
+            intent_result=intent_result,
+        )
+
+        manifest_path = (
+            self.base_directory
+            / "data"
+            / "ingestion_manifest.json"
+        )
+
+        summary = load_inventory_summary(
+            manifest_path
+        )
+
+        if (
+            intent_result.intent
+            == QueryIntent.EVIDENCE_AVAILABILITY
+        ):
+            if not parsed.evidence_type:
+                raise ProductionPipelineError(
+                    "Evidence-availability query is missing the requested "
+                    "evidence type."
+                )
+
+            inventory_answer = (
+                answer_requirement_evidence_availability(
+                    summary,
+                    evidence_type=(
+                        parsed.evidence_type
+                    ),
+                )
+            )
+
+        else:
+            inventory_answer = (
+                answer_inventory_query(
+                    summary,
+                    parsed.inventory_query,
+                )
+            )
+
+        return (
+            GeneralizedQAResponse
+            .from_inventory_answer(
+                original_query=query,
+                intent_result=intent_result,
+                inventory_answer=(
+                    inventory_answer
+                ),
+            )
+        )
+
+    def run_routed(
+        self,
+        query: str,
+        *,
+        evaluate_closure: bool | None = None,
+    ) -> RoutedProductionResponse:
+        """Route one query to concise inventory QA or engineering analysis.
+
+        COUNT, LIST, and EVIDENCE_AVAILABILITY requests bypass the
+        Assessment / Confidence / Closure frame and return GeneralizedQAResponse. All other intents
+        continue through the previously validated production pipeline.
+
+        Existing callers may continue using run() unchanged. Streamlit and
+        Streamlit and CLI callers should use run_routed() for intent-aware behavior.
+        """
+
+        clean_query = query.strip()
+
+        if not clean_query:
+            raise ValueError(
+                "Query must not be empty."
+            )
+
+        intent_result = classify_query_intent(
+            clean_query
+        )
+
+        if (
+            intent_result.intent
+            == QueryIntent.GENERAL
+        ):
+            return self._run_general_query(
+                query=clean_query,
+                intent_result=intent_result,
+            )
+
+        if intent_result.intent in {
+            QueryIntent.COUNT,
+            QueryIntent.LIST,
+            QueryIntent.EVIDENCE_AVAILABILITY,
+        }:
+            return self._run_inventory_query(
+                query=clean_query,
+                intent_result=intent_result,
+            )
+
+        return self.run(
+            clean_query,
+            evaluate_closure=evaluate_closure,
+        )
+
+    def _run_general_query(
+        self,
+        *,
+        query: str,
+        intent_result: QueryIntentResult,
+    ) -> GeneralizedQAResponse:
+        """Return a safe non-retrieval response for greetings/general input."""
+
+        return GeneralizedQAResponse(
+            query=query,
+
+            intent=(
+                intent_result.intent
+            ),
+
+            intent_rule=(
+                intent_result.matched_rule
+            ),
+
+            response_mode=(
+                QAResponseMode.CONCISE
+            ),
+
+            answer=(
+                "Hello. I can help with REQTRACE AI engineering "
+                "evidence queries.\n\n"
+                "Try one of these:\n"
+                "- How many observations are open?\n"
+                "- List all open observations.\n"
+                "- Which requirements have missing Test evidence?\n"
+                "- What does REQ-900 specify?\n"
+                "- Is OBS-023 supported?\n"
+                "- Can OBS-070 be closed?"
+            ),
+
+            record_count=0,
+
+            engineering_ids=(),
+
+            source_statement=(
+                "No engineering evidence retrieval was performed."
+            ),
+
+            deterministic=True,
+        )
 
     def run(
         self,
@@ -1041,6 +1231,8 @@ class ReqTraceProductionPipeline:
             ),
         )
 
+    
+
         # -------------------------------------------------------------
         # Stable application-facing response.
         # -------------------------------------------------------------
@@ -1147,3 +1339,4 @@ class ReqTraceProductionPipeline:
 
             timing=timing,
         )
+
